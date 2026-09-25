@@ -55,6 +55,7 @@ git branch --show-current   # git mode only
 ```
 
 Then derive:
+
 - `branchPlan = <configured plans dir>/<branch-with-slashes-replaced-by-hyphens>.md`
 - `namedFullPlan = the only *.md file in <configured plans dir>/ when no branch-based full plan exists`
 - `fastPlan = <resolved fast plan path>`
@@ -102,11 +103,13 @@ git diff --stat
 ```
 
 Then:
+
 - Re-open the active plan file (`@plan-file` override if provided; otherwise branch plan first, then a single named full plan, then `PLAN.md`, then `FIX_PLAN.md` redirect to `/aif-fix`).
 - Use `TaskList` to find `in_progress` first, otherwise the next pending task.
 - If `TaskList` and plan checkboxes disagree, reconcile (verify code, then update `TaskUpdate` + plan checkbox).
 
 **Starting new session:**
+
 ```
 User: /aif-implement
 

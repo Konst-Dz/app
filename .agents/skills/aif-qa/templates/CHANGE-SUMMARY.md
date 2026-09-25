@@ -14,17 +14,17 @@
 
 ### Affected Areas
 
-| Component     | Change type                   | Description              |
-|---------------|-------------------------------|--------------------------|
-| [Component 1] | Added / Changed / Removed     | [What exactly changed]   |
-| [Component 2] | Added / Changed / Removed     | [What exactly changed]   |
+| Component     | Change type               | Description            |
+| ------------- | ------------------------- | ---------------------- |
+| [Component 1] | Added / Changed / Removed | [What exactly changed] |
+| [Component 2] | Added / Changed / Removed | [What exactly changed] |
 
 ---
 
 ### Evidence
 
 | Finding        | Evidence                          |
-|----------------|-----------------------------------|
+| -------------- | --------------------------------- |
 | [What changed] | [file/function/commit/diff proof] |
 
 ---

@@ -1,7 +1,7 @@
 ---
 name: aif-plan
 description: Plan implementation for a feature or task. Two modes — fast (single quick plan) or full (richer plan with optional git branch/worktree flow). Use when user says "plan", "new feature", "start feature", "create tasks".
-argument-hint: "[fast | full] [--parallel | --list | --cleanup <branch>] <description>"
+argument-hint: '[fast | full] [--parallel | --list | --cleanup <branch>] <description>'
 allowed-tools: Read Write Glob Grep Bash(git *) Bash(cd *) Bash(cp *) Bash(mkdir *) Bash(basename *) Bash(shasum -a 256 *) Bash(sha256sum *) TaskCreate TaskUpdate TaskList AskUserQuestion Questions Task mcp__handoff__handoff_sync_status mcp__handoff__handoff_push_plan mcp__handoff__handoff_get_task mcp__handoff__handoff_list_tasks mcp__handoff__handoff_update_task
 disable-model-invocation: false
 version: 1.0.0
@@ -61,7 +61,7 @@ Handoff owns branch creation at the agent-code level. The skill must NOT create 
   The output must equal `HANDOFF_BRANCH_NAME` exactly. Do **not** accept partial matches, prefix matches, or "branch contains `/`" heuristics.
 - If the current branch does **not** match `HANDOFF_BRANCH_NAME`, STOP. Report a blocker in the plan summary:
   > `Branch drift: expected <HANDOFF_BRANCH_NAME>, actual <current>.`
-  Do **NOT** "fix" drift by switching or creating a branch — Handoff classifies that as `BranchIsolationError` / `blocked_external`.
+  > Do **NOT** "fix" drift by switching or creating a branch — Handoff classifies that as `BranchIsolationError` / `blocked_external`.
 - Use `HANDOFF_BRANCH_NAME` (with `/` replaced by `-`) as the full-mode plan filename stem: `<configured plans dir>/<HANDOFF_BRANCH_NAME-with-slashes-replaced>.md`. Skip the slug derivation in Step 1.2.
 
 **If `HANDOFF_MODE` is `1` but `HANDOFF_BRANCH_PREPARED` is unset or `0`:**
@@ -101,6 +101,7 @@ If config.yaml doesn't exist, use defaults:
 - Workflow: `plan_id_format: slug`
 
 Resolved language values:
+
 - `ui_language = language.ui || "en"`
 - `artifact_language = language.artifacts || language.ui || "en"`
 - `technical_terms_policy = language.technical_terms || "keep"`

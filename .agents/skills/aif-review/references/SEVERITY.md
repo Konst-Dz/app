@@ -1,6 +1,6 @@
 # Review item severity levels
 
-This document is the single source of truth for what counts as a *critical* item versus a *suggestion* in `aif-review`. Both `SKILL.md` and `references/VALIDATOR.md` defer to this file — do not redefine the levels inline elsewhere.
+This document is the single source of truth for what counts as a _critical_ item versus a _suggestion_ in `aif-review`. Both `SKILL.md` and `references/VALIDATOR.md` defer to this file — do not redefine the levels inline elsewhere.
 
 ## Two levels
 

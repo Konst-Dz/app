@@ -1,11 +1,12 @@
 # Docker Compose Lifecycle Hooks Reference
 
 > Sources:
+>
 > - https://docs.docker.com/compose/how-tos/lifecycle/
 > - https://docs.docker.com/reference/compose-file/services/#post_start
 > - https://docs.docker.com/reference/compose-file/services/#pre_stop
-> Created: 2026-05-11
-> Updated: 2026-05-11
+>   Created: 2026-05-11
+>   Updated: 2026-05-11
 
 ## Overview
 
@@ -63,7 +64,7 @@ Use this pattern when a service can tolerate the permission fix running shortly 
 services:
   app:
     image: example/app:latest
-    user: "${APP_UID:-1001}:${APP_GID:-1001}"
+    user: '${APP_UID:-1001}:${APP_GID:-1001}'
     volumes:
       - app_data:/var/lib/app
       - app_cache:/var/cache/app
@@ -72,8 +73,8 @@ services:
           sh -lc 'chown -R "${APP_UID:-1001}:${APP_GID:-1001}" /var/lib/app /var/cache/app'
         user: root
         environment:
-          APP_UID: "${APP_UID:-1001}"
-          APP_GID: "${APP_GID:-1001}"
+          APP_UID: '${APP_UID:-1001}'
+          APP_GID: '${APP_GID:-1001}'
 
 volumes:
   app_data:
@@ -91,8 +92,8 @@ services:
   angie:
     image: docker.angie.software/angie:1.11.4
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./docker/angie/default.conf:/etc/angie/http.d/default.conf:ro
       - angie_acme:/var/lib/angie/acme

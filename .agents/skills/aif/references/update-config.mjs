@@ -25,14 +25,28 @@ const SECTION_KEYS = {
     'qa',
     'archive',
   ],
-  workflow: ['auto_create_dirs', 'plan_id_format', 'analyze_updates_architecture', 'architecture_updates_roadmap', 'verify_mode'],
-  git: ['enabled', 'base_branch', 'create_branches', 'branch_prefix', 'skip_push_after_commit'],
+  workflow: [
+    'auto_create_dirs',
+    'plan_id_format',
+    'analyze_updates_architecture',
+    'architecture_updates_roadmap',
+    'verify_mode',
+  ],
+  git: [
+    'enabled',
+    'base_branch',
+    'create_branches',
+    'branch_prefix',
+    'skip_push_after_commit',
+  ],
   rules: ['base'],
 };
 
 const SECTION_ORDER = Object.keys(SECTION_KEYS);
 const ALLOWED_PATHS = new Set(
-  SECTION_ORDER.flatMap(section => SECTION_KEYS[section].map(key => `${section}.${key}`)),
+  SECTION_ORDER.flatMap((section) =>
+    SECTION_KEYS[section].map((key) => `${section}.${key}`),
+  ),
 );
 
 function fail(code, message) {
@@ -69,7 +83,10 @@ function parseArgs(argv) {
   }
 
   if (!args.template || !args.target || !args.payload) {
-    fail(3, 'Usage: update-config.mjs --template <path> --target <path> --payload <path>');
+    fail(
+      3,
+      'Usage: update-config.mjs --template <path> --target <path> --payload <path>',
+    );
   }
 
   return args;
@@ -153,7 +170,7 @@ function splitInlineComment(valuePart) {
       continue;
     }
 
-    if (char === '"' || char === '\'') {
+    if (char === '"' || char === "'") {
       quote = char;
       continue;
     }
@@ -190,7 +207,15 @@ function isUnsafeScalar(value) {
 }
 
 function isIncompleteScalar(value) {
-  return value === '' || value === 'null' || value === 'Null' || value === 'NULL' || value === '~' || value === '""' || value === '\'\'';
+  return (
+    value === '' ||
+    value === 'null' ||
+    value === 'Null' ||
+    value === 'NULL' ||
+    value === '~' ||
+    value === '""' ||
+    value === "''"
+  );
 }
 
 function formatScalar(value) {
@@ -236,7 +261,10 @@ function validateValueMap(label, value) {
     }
 
     if (typeof entry !== 'string' && typeof entry !== 'boolean') {
-      fail(3, `Unsupported value type for ${keyPath}; expected string or boolean`);
+      fail(
+        3,
+        `Unsupported value type for ${keyPath}; expected string or boolean`,
+      );
     }
 
     result[keyPath] = entry;
@@ -263,7 +291,8 @@ function collectTopLevelHeaders(lines) {
   }
 
   for (let index = 0; index < headers.length; index += 1) {
-    headers[index].blockEnd = index + 1 < headers.length ? headers[index + 1].blockStart : lines.length;
+    headers[index].blockEnd =
+      index + 1 < headers.length ? headers[index + 1].blockStart : lines.length;
   }
 
   return headers;
@@ -311,18 +340,30 @@ function parseSection(lines, header, sectionName) {
     }
 
     if (keys[key]) {
-      fail(1, `Unsupported target structure: duplicate managed key ${sectionName}.${key}`);
+      fail(
+        1,
+        `Unsupported target structure: duplicate managed key ${sectionName}.${key}`,
+      );
     }
 
     const commentSplit = splitInlineComment(match[2]);
     const value = commentSplit.value.trim();
 
-    if (isUnsafeScalar(value) || hasNestedManagedValue(lines, index, sectionEnd)) {
-      fail(1, `Unsupported target structure for managed key ${sectionName}.${key}`);
+    if (
+      isUnsafeScalar(value) ||
+      hasNestedManagedValue(lines, index, sectionEnd)
+    ) {
+      fail(
+        1,
+        `Unsupported target structure for managed key ${sectionName}.${key}`,
+      );
     }
 
     let blockStart = index;
-    while (blockStart > header.lineIndex + 1 && isIndentedComment(lines[blockStart - 1])) {
+    while (
+      blockStart > header.lineIndex + 1 &&
+      isIndentedComment(lines[blockStart - 1])
+    ) {
       blockStart -= 1;
     }
 
@@ -363,11 +404,17 @@ function parseDocument(rawText) {
     }
 
     if (sections[header.name]) {
-      fail(1, `Unsupported target structure: duplicate managed section ${header.name}`);
+      fail(
+        1,
+        `Unsupported target structure: duplicate managed section ${header.name}`,
+      );
     }
 
     if (header.valuePart !== '' && !header.valuePart.startsWith('#')) {
-      fail(1, `Unsupported target structure for managed section ${header.name}`);
+      fail(
+        1,
+        `Unsupported target structure for managed section ${header.name}`,
+      );
     }
 
     sections[header.name] = parseSection(lines, header, header.name);
@@ -421,7 +468,8 @@ function buildKeyBlock(templateMeta, keyPath, value) {
   const [sectionName, keyName] = keyPath.split('.');
   const templateKey = templateMeta.sections[sectionName].keys[keyName];
   const blockLines = [...templateKey.blockLines];
-  blockLines[templateKey.relativeLineIndex] = `  ${keyName}: ${formatScalar(value)}`;
+  blockLines[templateKey.relativeLineIndex] =
+    `  ${keyName}: ${formatScalar(value)}`;
   return blockLines;
 }
 
@@ -432,7 +480,8 @@ function buildSectionBlock(templateMeta, sectionName, overrides) {
   for (const [keyPath, value] of Object.entries(overrides)) {
     const [, keyName] = keyPath.split('.');
     const templateKey = section.keys[keyName];
-    blockLines[templateKey.lineIndex - section.blockStart] = `  ${keyName}: ${formatScalar(value)}`;
+    blockLines[templateKey.lineIndex - section.blockStart] =
+      `  ${keyName}: ${formatScalar(value)}`;
   }
 
   return blockLines;
@@ -481,13 +530,18 @@ function normalizeInsertedBlock(blockLines, previousLine, nextLine) {
 function insertLines(lines, index, blockLines) {
   const previousLine = index > 0 ? lines[index - 1] : null;
   const nextLine = index < lines.length ? lines[index] : null;
-  const normalizedBlock = normalizeInsertedBlock(blockLines, previousLine, nextLine);
+  const normalizedBlock = normalizeInsertedBlock(
+    blockLines,
+    previousLine,
+    nextLine,
+  );
   lines.splice(index, 0, ...normalizedBlock);
 }
 
 function updateExistingKeyLine(lines, entry, value) {
   const commentSuffix = entry.comment ? entry.comment : '';
-  lines[entry.lineIndex] = `  ${entry.key}: ${formatScalar(value)}${commentSuffix}`;
+  lines[entry.lineIndex] =
+    `  ${entry.key}: ${formatScalar(value)}${commentSuffix}`;
 }
 
 function findSectionInsertIndex(parsed, sectionName) {
@@ -512,7 +566,10 @@ function findSectionInsertIndex(parsed, sectionName) {
 
 function findInitialSectionInsertIndex(section, lines) {
   let index = section.start + 1;
-  while (index < section.end && (isIndentedComment(lines[index]) || isBlank(lines[index]))) {
+  while (
+    index < section.end &&
+    (isIndentedComment(lines[index]) || isBlank(lines[index]))
+  ) {
     index += 1;
   }
   return index;
@@ -537,7 +594,10 @@ function findKeyInsertIndex(parsed, templateMeta, sectionName, keyName) {
     }
   }
 
-  return findInitialSectionInsertIndex(section, parsed.lines) || templateMeta.sections[sectionName].start + 1;
+  return (
+    findInitialSectionInsertIndex(section, parsed.lines) ||
+    templateMeta.sections[sectionName].start + 1
+  );
 }
 
 function ensureSection(parsed, templateMeta, sectionName, payload) {
@@ -560,7 +620,11 @@ function ensureSection(parsed, templateMeta, sectionName, payload) {
   }
 
   const insertIndex = findSectionInsertIndex(parsed, sectionName);
-  const sectionBlock = buildSectionBlock(templateMeta, sectionName, targetedOverrides);
+  const sectionBlock = buildSectionBlock(
+    templateMeta,
+    sectionName,
+    targetedOverrides,
+  );
   insertLines(parsed.lines, insertIndex, sectionBlock);
   return parseDocument(joinLines(parsed.lines));
 }
@@ -579,7 +643,12 @@ function upsertManagedKey(parsed, templateMeta, keyPath, value, mode) {
     return parseDocument(joinLines(parsed.lines));
   }
 
-  const insertIndex = findKeyInsertIndex(parsed, templateMeta, sectionName, keyName);
+  const insertIndex = findKeyInsertIndex(
+    parsed,
+    templateMeta,
+    sectionName,
+    keyName,
+  );
   const blockLines = buildKeyBlock(templateMeta, keyPath, value);
   insertLines(parsed.lines, insertIndex, blockLines);
   return parseDocument(joinLines(parsed.lines));
@@ -597,11 +666,23 @@ function applyUpdates(baseText, templateMeta, payload) {
       const keyPath = `${sectionName}.${keyName}`;
 
       if (Object.hasOwn(payload.set, keyPath)) {
-        parsed = upsertManagedKey(parsed, templateMeta, keyPath, payload.set[keyPath], 'set');
+        parsed = upsertManagedKey(
+          parsed,
+          templateMeta,
+          keyPath,
+          payload.set[keyPath],
+          'set',
+        );
       }
 
       if (Object.hasOwn(payload.fillMissing, keyPath)) {
-        parsed = upsertManagedKey(parsed, templateMeta, keyPath, payload.fillMissing[keyPath], 'fillMissing');
+        parsed = upsertManagedKey(
+          parsed,
+          templateMeta,
+          keyPath,
+          payload.fillMissing[keyPath],
+          'fillMissing',
+        );
       }
     }
   }
@@ -629,7 +710,8 @@ async function readOptionalText(filePath) {
 }
 
 async function writeIfChanged(targetPath, nextTextLf, existingRawText, eol) {
-  const currentLf = existingRawText === null ? null : normalizeNewlines(existingRawText);
+  const currentLf =
+    existingRawText === null ? null : normalizeNewlines(existingRawText);
 
   if (currentLf === nextTextLf) {
     return false;
@@ -654,12 +736,18 @@ async function main() {
 
   if (payload.mode === 'create') {
     const existingRawText = await readOptionalText(args.target);
-    const targetEol = existingRawText ? detectEol(existingRawText) : detectEol(templateRawText);
-    const nextTextLf = applyUpdates(joinLines(templateMeta.lines), templateMeta, {
-      mode: 'create',
-      set: payload.set,
-      fillMissing: {},
-    });
+    const targetEol = existingRawText
+      ? detectEol(existingRawText)
+      : detectEol(templateRawText);
+    const nextTextLf = applyUpdates(
+      joinLines(templateMeta.lines),
+      templateMeta,
+      {
+        mode: 'create',
+        set: payload.set,
+        fillMissing: {},
+      },
+    );
     await writeIfChanged(args.target, nextTextLf, existingRawText, targetEol);
     return;
   }

@@ -1,7 +1,7 @@
 ---
 name: aif-commit
 description: Create conventional commit messages by analyzing staged changes. Generates semantic commit messages following the Conventional Commits specification. Use when user says "commit", "save changes", or "create commit".
-argument-hint: "[scope or context]"
+argument-hint: '[scope or context]'
 allowed-tools: Read Glob Bash(git *) AskUserQuestion Questions
 disable-model-invocation: false
 ---
@@ -13,6 +13,7 @@ Generate commit messages following the [Conventional Commits](https://www.conven
 ## Workflow
 
 **FIRST:** Read `.ai-factory/config.yaml` if it exists to resolve:
+
 - **Paths:** `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.rules`, `paths.plan`, and `paths.plans`
 - **Language:** `language.ui` for prompts and commit message conventions
 - **Workflow:** `workflow.plan_id_format` for read-only active plan discovery (`slug` default; `sequential` uses numbered full-plan lookup)
@@ -20,6 +21,7 @@ Generate commit messages following the [Conventional Commits](https://www.conven
 - **Rules hierarchy:** `rules.base` plus any named `rules.<area>` entries
 
 If config.yaml doesn't exist, use defaults:
+
 - Paths: `.ai-factory/` for context artifacts, `.ai-factory/PLAN.md` for `paths.plan`, `.ai-factory/plans/` for `paths.plans`
 - Language: `en` (English)
 - Workflow: `workflow.plan_id_format: slug`
@@ -32,6 +34,7 @@ This file contains project-specific rules accumulated by `/aif-evolve` from patc
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
+
 - Treat them as **project-level overrides** for this skill's general instructions
 - When a skill-context rule conflicts with a general rule written in this SKILL.md,
   **the skill-context rule wins** (more specific context takes priority — same principle as nested CLAUDE.md files)
@@ -143,11 +146,13 @@ If any rule is violated — fix the output before presenting it to the user.
 ## Examples
 
 **Simple feature:**
+
 ```
 feat(auth): add password reset functionality
 ```
 
 **Bug fix with body:**
+
 ```
 fix(api): handle null response from payment gateway
 
@@ -158,6 +163,7 @@ Fixes #123
 ```
 
 **Breaking change:**
+
 ```
 feat(api)!: change response format for user endpoint
 
@@ -194,28 +200,30 @@ When invoked:
 
 9. Execute `git commit` with the confirmed message
 10. Post-commit push handling:
-   - If `git.skip_push_after_commit = true` in resolved config:
-     - Skip push prompt entirely
-     - End workflow after successful local commit
-   - Otherwise (default behavior), offer to push:
-     - Show branch/ahead status: `git status -sb`
-     - If the branch has no upstream, use: `git push -u origin <branch>`
-     - Otherwise: `git push`
 
-     ```
-     AskUserQuestion: Push to remote?
+- If `git.skip_push_after_commit = true` in resolved config:
+  - Skip push prompt entirely
+  - End workflow after successful local commit
+- Otherwise (default behavior), offer to push:
+  - Show branch/ahead status: `git status -sb`
+  - If the branch has no upstream, use: `git push -u origin <branch>`
+  - Otherwise: `git push`
 
-     Options:
-     1. Push now
-     2. Skip push
-     ```
+  ```
+  AskUserQuestion: Push to remote?
 
-     - **Push now** → execute push command based on upstream status:
-       - if branch has no upstream → `git push -u origin <branch>`
-       - otherwise → `git push`
-     - **Skip push** → end the workflow
+  Options:
+  1. Push now
+  2. Skip push
+  ```
+
+  - **Push now** → execute push command based on upstream status:
+    - if branch has no upstream → `git push -u origin <branch>`
+    - otherwise → `git push`
+  - **Skip push** → end the workflow
 
 If argument provided (e.g., `/aif-commit auth`):
+
 - Use it as the scope
 - Or as context for the commit message
 

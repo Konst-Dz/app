@@ -29,7 +29,7 @@ For every item in the input list you MUST choose exactly one verdict:
   - the fix repairs an adjacent behavior rather than the one described,
   - the wording duplicates another item under a different label,
   - the citation is paraphrased and does not match the file content verbatim.
-  Return a corrected version of the item under `Modified-text:`, keeping the same prose shape (behavior → optional note → path → fix).
+    Return a corrected version of the item under `Modified-text:`, keeping the same prose shape (behavior → optional note → path → fix).
 - **drop** — any of the following is true:
   - the behavior does not actually follow from the code,
   - the cited symbol/file/line exists neither in the reviewed diff nor on disk (the citation is fabricated),
@@ -43,10 +43,11 @@ When in doubt between `modify` and `drop`: if the underlying behavior is real, p
 Independently of `Verdict`, every item may also include a `Severity` field that decides which section it lands in after filtering. The section each item currently sits in is shown in its `### Item N (section: critical|suggestion)` heading — use it to tell a real reclassification from a no-op. The field is optional: omitting it is equivalent to `Severity: unchanged`, and the common case (no reclassification) does not require writing it at all. Include the field explicitly only when you want to move the item between sections. Allowed values:
 
 - **unchanged** (default) — item stays in the section it came from. Use this when the original severity is correct.
-- **critical** — item belongs in "Critical Issues" after filtering. Use this when the cited behavior matches the *critical* level criteria in the "Severity rules" section below even though the original review put it in "Suggestions" (promote), or keep it here if it was already critical.
-- **suggestion** — item belongs in "Suggestions" after filtering. Use this when the cited behavior matches the *suggestion* level criteria in the "Severity rules" section below even though the original review put it in "Critical Issues" (demote), or keep it here if it was already a suggestion.
+- **critical** — item belongs in "Critical Issues" after filtering. Use this when the cited behavior matches the _critical_ level criteria in the "Severity rules" section below even though the original review put it in "Suggestions" (promote), or keep it here if it was already critical.
+- **suggestion** — item belongs in "Suggestions" after filtering. Use this when the cited behavior matches the _suggestion_ level criteria in the "Severity rules" section below even though the original review put it in "Critical Issues" (demote), or keep it here if it was already a suggestion.
 
 Severity is set independently of `Verdict`:
+
 - `keep` + severity move = text stays, item just moves to the other section,
 - `modify` + severity move = text is rewritten AND the item moves,
 - `drop` = `Severity` is ignored (the item is gone).

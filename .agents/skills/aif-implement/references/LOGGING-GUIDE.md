@@ -14,18 +14,28 @@
 
 ```typescript
 function processOrder(order: Order): Result {
-  console.log('[processOrder] START', { orderId: order.id, items: order.items.length });
+  console.log('[processOrder] START', {
+    orderId: order.id,
+    items: order.items.length,
+  });
 
   try {
     const validated = validateOrder(order);
     console.log('[processOrder] Validation passed', { validated });
 
     const result = submitToPayment(validated);
-    console.log('[processOrder] Payment result', { success: result.success, transactionId: result.id });
+    console.log('[processOrder] Payment result', {
+      success: result.success,
+      transactionId: result.id,
+    });
 
     return result;
   } catch (error) {
-    console.error('[processOrder] ERROR', { orderId: order.id, error: error.message, stack: error.stack });
+    console.error('[processOrder] ERROR', {
+      orderId: order.id,
+      error: error.message,
+      stack: error.stack,
+    });
     throw error;
   }
 }

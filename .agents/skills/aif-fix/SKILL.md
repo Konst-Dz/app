@@ -85,6 +85,7 @@ If config.yaml doesn't exist, use defaults:
 - `technical_terms_policy`: `keep`
 
 Resolved language values:
+
 - `ui_language = language.ui || "en"`
 - `artifact_language = language.artifacts || language.ui || "en"`
 - `technical_terms_policy = language.technical_terms || "keep"`
@@ -350,15 +351,15 @@ Record the selected regression check, pre-fix result, and any fallback decision 
 
 ```typescript
 // ✅ REQUIRED: Add logging around the fix
-console.log("[FIX] Processing user input", { userId, input });
+console.log('[FIX] Processing user input', { userId, input });
 
 try {
   // The actual fix
   const result = fixedLogic(input);
-  console.log("[FIX] Success", { userId, result });
+  console.log('[FIX] Success', { userId, result });
   return result;
 } catch (error) {
-  console.error("[FIX] Error in fixedLogic", {
+  console.error('[FIX] Error in fixedLogic', {
     userId,
     input,
     error: error.message,
@@ -385,6 +386,7 @@ try {
 ### Step 5: Suggest Additional Test Coverage
 
 **Handoff sync (manual mode ONLY — skip entirely when `HANDOFF_MODE` is `1`):** If a Handoff task ID is known AND `HANDOFF_MODE` is NOT `1`:
+
 1. Call `handoff_push_plan` with `{ taskId: <id>, planContent: <fix summary or updated plan> }`.
 2. If `HANDOFF_SKIP_REVIEW` is `1`: call `handoff_sync_status` with `{ taskId: <id>, newStatus: "done", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: false }`.
 3. Otherwise: call `handoff_sync_status` with `{ taskId: <id>, newStatus: "review", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: true }`.
@@ -452,14 +454,14 @@ Options:
 
 ```typescript
 // Pattern for fixes
-const LOG_FIX = process.env.LOG_LEVEL === "debug" || process.env.DEBUG_FIX;
+const LOG_FIX = process.env.LOG_LEVEL === 'debug' || process.env.DEBUG_FIX;
 
 function fixedFunction(input) {
-  if (LOG_FIX) console.log("[FIX] Input:", input);
+  if (LOG_FIX) console.log('[FIX] Input:', input);
 
   // ... fix logic ...
 
-  if (LOG_FIX) console.log("[FIX] Output:", result);
+  if (LOG_FIX) console.log('[FIX] Output:', result);
   return result;
 }
 ```

@@ -1,12 +1,12 @@
 ---
 name: aif-archive
-description: "Archive completed plans and roadmap milestones. Moves finished plans to the archive directory and optionally trims closed milestones from ROADMAP.md. Use when user says \"archive plans\", \"clean up plans\", \"archive completed\", or \"trim roadmap\"."
-argument-hint: "[list | --roadmap | --all | <plan-name>]"
+description: 'Archive completed plans and roadmap milestones. Moves finished plans to the archive directory and optionally trims closed milestones from ROADMAP.md. Use when user says "archive plans", "clean up plans", "archive completed", or "trim roadmap".'
+argument-hint: '[list | --roadmap | --all | <plan-name>]'
 allowed-tools: Read Write Edit Glob Grep Bash(mv *) Bash(mkdir *) Bash(git *) AskUserQuestion
 disable-model-invocation: false
 metadata:
   author: AI Factory
-  version: "1.0"
+  version: '1.0'
   category: workflow
 ---
 
@@ -213,9 +213,11 @@ For each plan to archive:
 1. `mkdir -p <paths.archive>/plans/`
 
 2. **Collision check.** Before moving, verify the destination does not already exist:
+
    ```
    Read <paths.archive>/plans/<original-filename>
    ```
+
    If the file exists:
    - **Single plan** (interactive or `<plan-name>`): STOP with an error:
      ```
@@ -229,12 +231,15 @@ For each plan to archive:
      ```
      WARN [aif-archive] skipped: <filename> — destination already exists
      ```
+
    Do NOT overwrite in either case.
 
 3. **Move the source file** into the archive path first:
+
    ```bash
    mv <paths.plans>/<filename> <paths.archive>/plans/<filename>
    ```
+
    This atomically removes the plan from the active directory.
 
 4. **Add archive metadata** to the moved file using `Edit`:

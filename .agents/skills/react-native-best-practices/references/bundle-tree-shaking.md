@@ -44,12 +44,12 @@ module.exports = {
 
 ## Platform Support
 
-| Bundler | Tree Shaking | Notes |
-|---------|--------------|-------|
-| Metro | No general tree shaking | Platform/dev-only shaking exists; use specialized tooling for unused exports |
-| Expo SDK 52+ | Experimental unused import/export removal | Production only; requires ESM and side-effect-safe modules |
-| Expo SDK 54+ | Verify defaults | Import support is documented as default; tree-shaking env toggles may still be required |
-| Re.Pack | Yes | Via Webpack/Rspack optimizations and minification |
+| Bundler      | Tree Shaking                              | Notes                                                                                   |
+| ------------ | ----------------------------------------- | --------------------------------------------------------------------------------------- |
+| Metro        | No general tree shaking                   | Platform/dev-only shaking exists; use specialized tooling for unused exports            |
+| Expo SDK 52+ | Experimental unused import/export removal | Production only; requires ESM and side-effect-safe modules                              |
+| Expo SDK 54+ | Verify defaults                           | Import support is documented as default; tree-shaking env toggles may still be required |
+| Re.Pack      | Yes                                       | Via Webpack/Rspack optimizations and minification                                       |
 
 ## Setup: Expo SDK 52+
 
@@ -136,6 +136,7 @@ if (RN.Platform.OS === 'ios') {
 For non-Expo projects, requires both `experimentalImportSupport: true` in Metro config and `disableImportExportTransform: true` in Babel config.
 
 Impact: Savings from enabling platform shaking on a bare React Native Community CLI project are:
+
 - 5% smaller Hermes bytecode (2.79 MB → 2.64 MB)
 - 15% smaller minified JS bundle (1 MB → 0.85 MB)
 

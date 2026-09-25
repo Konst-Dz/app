@@ -14,7 +14,7 @@ vars:
   COMMIT:
     sh: git rev-parse --short HEAD 2>/dev/null || echo "unknown"
   DOCKER_REGISTRY: ghcr.io
-  DOCKER_IMAGE: "{{.DOCKER_REGISTRY}}/{{.PROJECT}}"
+  DOCKER_IMAGE: '{{.DOCKER_REGISTRY}}/{{.PROJECT}}'
   JVM_MODULE:
     sh: echo "${JVM_MODULE:-change-me-subproject}"
 
@@ -27,47 +27,47 @@ tasks:
   clean:
     desc: Remove build artifacts
     cmds:
-      - "{{.ENTRYPOINT}} clean"
+      - '{{.ENTRYPOINT}} clean'
 
   build:
     desc: Full build including tests and checks (`verify`)
     cmds:
-      - "{{.ENTRYPOINT}} verify"
+      - '{{.ENTRYPOINT}} verify'
 
   assemble:
     desc: Build project and package artifacts
     cmds:
-      - "{{.ENTRYPOINT}} package"
+      - '{{.ENTRYPOINT}} package'
 
   test:
     desc: Run unit tests
     cmds:
-      - "{{.ENTRYPOINT}} test"
+      - '{{.ENTRYPOINT}} test'
 
   check:
     desc: Run tests and static analysis (`verify`)
     cmds:
-      - "{{.ENTRYPOINT}} verify"
+      - '{{.ENTRYPOINT}} verify'
 
   module:build:
     desc: Package one reactor subtree (export JVM_MODULE; -pl … -am package)
     cmds:
-      - "{{.ENTRYPOINT}} -pl {{.JVM_MODULE}} -am package"
+      - '{{.ENTRYPOINT}} -pl {{.JVM_MODULE}} -am package'
 
   module:test:
     desc: Test one reactor subtree
     cmds:
-      - "{{.ENTRYPOINT}} -pl {{.JVM_MODULE}} -am test"
+      - '{{.ENTRYPOINT}} -pl {{.JVM_MODULE}} -am test'
 
   module:check:
     desc: Verify one reactor subtree
     cmds:
-      - "{{.ENTRYPOINT}} -pl {{.JVM_MODULE}} -am verify"
+      - '{{.ENTRYPOINT}} -pl {{.JVM_MODULE}} -am verify'
 
   dev:
     desc: Run application locally (framework from SKILL §2.3 scan)
     cmds:
-      - "{{.ENTRYPOINT}} {{.DEV_MAVEN_GOAL}}"
+      - '{{.ENTRYPOINT}} {{.DEV_MAVEN_GOAL}}'
 
   lint:
     desc: Full verification (delegates to `verify`)
@@ -76,37 +76,37 @@ tasks:
   fmt:
     desc: Apply Spotless (`spotless:apply`)
     cmds:
-      - "{{.ENTRYPOINT}} spotless:apply"
+      - '{{.ENTRYPOINT}} spotless:apply'
 
   lint:checkstyle:
     desc: Checkstyle (`checkstyle:check`)
     cmds:
-      - "{{.ENTRYPOINT}} checkstyle:check"
+      - '{{.ENTRYPOINT}} checkstyle:check'
 
   lint:spotbugs:
     desc: SpotBugs (`spotbugs:check`)
     cmds:
-      - "{{.ENTRYPOINT}} spotbugs:check"
+      - '{{.ENTRYPOINT}} spotbugs:check'
 
   lint:pmd:
     desc: PMD (`pmd:check`)
     cmds:
-      - "{{.ENTRYPOINT}} pmd:check"
+      - '{{.ENTRYPOINT}} pmd:check'
 
   lint:spotless:
     desc: Spotless check only (`spotless:check`)
     cmds:
-      - "{{.ENTRYPOINT}} spotless:check"
+      - '{{.ENTRYPOINT}} spotless:check'
 
   db:migrate:liquibase:
     desc: Liquibase (`liquibase:update`)
     cmds:
-      - "{{.ENTRYPOINT}} liquibase:update"
+      - '{{.ENTRYPOINT}} liquibase:update'
 
   db:migrate:flyway:
     desc: Flyway (`flyway:migrate`)
     cmds:
-      - "{{.ENTRYPOINT}} flyway:migrate"
+      - '{{.ENTRYPOINT}} flyway:migrate'
 
   docker:build:
     desc: Build Docker image

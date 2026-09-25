@@ -29,7 +29,7 @@ For every item in the input list you MUST choose exactly one verdict:
   - the suggested edit fixes an adjacent task rather than the one cited,
   - the wording duplicates another item under a different label,
   - the code citation is paraphrased and does not match the file content verbatim.
-  Return a corrected version of the item under `Modified-text:`, keeping the same prose shape (behavioral impact → optional note → plan anchor → suggested edit). Do not change the `Group:` value — it must stay identical to the input.
+    Return a corrected version of the item under `Modified-text:`, keeping the same prose shape (behavioral impact → optional note → plan anchor → suggested edit). Do not change the `Group:` value — it must stay identical to the input.
 - **drop** — any of the following is true:
   - for `missing`: the suggestion is gold-plating (it adds a new task outside the plan's stated scope without a concrete codebase, roadmap, or user-prompt trigger — see check 7), or the task the item proposes is already present in the plan (the upstream agent missed it),
   - for `out_of_scope`: the cited task actually IS inside the feature scope after rereading the plan's goal (the upstream agent misjudged it),

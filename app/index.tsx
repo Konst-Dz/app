@@ -1,21 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ReadingScreen } from '@/features/reading';
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bible Reader</Text>
-    </View>
-  );
+export default function ReadingPage() {
+  return <ReadingScreen />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-});

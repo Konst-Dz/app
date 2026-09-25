@@ -14,7 +14,7 @@ vars:
   COMMIT:
     sh: git rev-parse --short HEAD 2>/dev/null || echo "unknown"
   DOCKER_REGISTRY: ghcr.io
-  DOCKER_IMAGE: "{{.DOCKER_REGISTRY}}/{{.PROJECT}}"
+  DOCKER_IMAGE: '{{.DOCKER_REGISTRY}}/{{.PROJECT}}'
   JVM_MODULE:
     sh: echo "${JVM_MODULE:-change-me-subproject}"
 
@@ -27,47 +27,47 @@ tasks:
   clean:
     desc: Remove build artifacts
     cmds:
-      - "{{.ENTRYPOINT}} clean"
+      - '{{.ENTRYPOINT}} clean'
 
   build:
     desc: Full build including tests and checks
     cmds:
-      - "{{.ENTRYPOINT}} build"
+      - '{{.ENTRYPOINT}} build'
 
   assemble:
     desc: Build project and package artifacts
     cmds:
-      - "{{.ENTRYPOINT}} assemble"
+      - '{{.ENTRYPOINT}} assemble'
 
   test:
     desc: Run unit tests
     cmds:
-      - "{{.ENTRYPOINT}} test"
+      - '{{.ENTRYPOINT}} test'
 
   check:
     desc: Run tests and static analysis (Gradle `check`)
     cmds:
-      - "{{.ENTRYPOINT}} check"
+      - '{{.ENTRYPOINT}} check'
 
   module:build:
     desc: Build one Gradle subproject (export JVM_MODULE; uses env or default)
     cmds:
-      - "{{.ENTRYPOINT}} :{{.JVM_MODULE}}:build"
+      - '{{.ENTRYPOINT}} :{{.JVM_MODULE}}:build'
 
   module:test:
     desc: Test one Gradle subproject
     cmds:
-      - "{{.ENTRYPOINT}} :{{.JVM_MODULE}}:test"
+      - '{{.ENTRYPOINT}} :{{.JVM_MODULE}}:test'
 
   module:check:
     desc: Check one Gradle subproject
     cmds:
-      - "{{.ENTRYPOINT}} :{{.JVM_MODULE}}:check"
+      - '{{.ENTRYPOINT}} :{{.JVM_MODULE}}:check'
 
   dev:
     desc: Run application locally (framework from SKILL §2.3 scan)
     cmds:
-      - "{{.ENTRYPOINT}} {{.DEV_GRADLE_TASK}}"
+      - '{{.ENTRYPOINT}} {{.DEV_GRADLE_TASK}}'
 
   lint:
     desc: Full verification (delegates to `check`)
@@ -76,37 +76,37 @@ tasks:
   fmt:
     desc: Apply Spotless (`spotlessApply`)
     cmds:
-      - "{{.ENTRYPOINT}} spotlessApply"
+      - '{{.ENTRYPOINT}} spotlessApply'
 
   lint:checkstyle:
     desc: Checkstyle (`checkstyleMain`)
     cmds:
-      - "{{.ENTRYPOINT}} checkstyleMain"
+      - '{{.ENTRYPOINT}} checkstyleMain'
 
   lint:spotbugs:
     desc: SpotBugs (`spotbugsMain`)
     cmds:
-      - "{{.ENTRYPOINT}} spotbugsMain"
+      - '{{.ENTRYPOINT}} spotbugsMain'
 
   lint:pmd:
     desc: PMD (`pmdMain`)
     cmds:
-      - "{{.ENTRYPOINT}} pmdMain"
+      - '{{.ENTRYPOINT}} pmdMain'
 
   lint:spotless:
     desc: Spotless check only (`spotlessCheck`)
     cmds:
-      - "{{.ENTRYPOINT}} spotlessCheck"
+      - '{{.ENTRYPOINT}} spotlessCheck'
 
   db:migrate:liquibase:
     desc: Liquibase update (`liquibaseUpdate`)
     cmds:
-      - "{{.ENTRYPOINT}} liquibaseUpdate"
+      - '{{.ENTRYPOINT}} liquibaseUpdate'
 
   db:migrate:flyway:
     desc: Flyway migrate (`flywayMigrate`)
     cmds:
-      - "{{.ENTRYPOINT}} flywayMigrate"
+      - '{{.ENTRYPOINT}} flywayMigrate'
 
   docker:build:
     desc: Build Docker image

@@ -4,12 +4,12 @@ description: >-
   Verify completed implementation against the plan. Checks that all tasks were fully implemented,
   nothing was forgotten, code compiles, tests pass, and quality standards are met.
   Use after "/aif-implement" completes, or when user says "verify", "check work", "did we miss anything".
-argument-hint: "[--strict]"
+argument-hint: '[--strict]'
 allowed-tools: Read Edit Glob Grep Bash(git *) Bash(npm *) Bash(npx *) Bash(yarn *) Bash(pnpm *) Bash(bun *) Bash(go *) Bash(python *) Bash(php *) Bash(composer *) Bash(cargo *) Bash(make *) Bash(task *) Bash(just *) Bash(mage *) TaskList TaskGet AskUserQuestion Questions
 disable-model-invocation: false
 metadata:
   author: AI Factory
-  version: "1.0"
+  version: '1.0'
   category: quality
 ---
 
@@ -26,6 +26,7 @@ Verify that the completed implementation matches the plan, nothing was missed, a
 ### 0.0 Load config.yaml
 
 **FIRST:** Read `.ai-factory/config.yaml` if it exists to resolve:
+
 - **Paths:** `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.research`, `paths.plan`, `paths.plans`, `paths.fix_plan`, `paths.specs`, `paths.rules`, and `paths.archive`
 - **verify_mode:** default verification strictness (`strict` | `normal` | `lenient`)
 - **Git:** `git.enabled`, `git.base_branch`, `git.create_branches`
@@ -39,11 +40,13 @@ Verify that the completed implementation matches the plan, nothing was missed, a
   Treat any unknown value as `slug`.
 
 **verify_mode priority:**
+
 1. `--strict` CLI flag → always use `strict`
 2. config.yaml `workflow.verify_mode` → use configured value
 3. Default → `normal`
 
 If config.yaml doesn't exist, use defaults:
+
 - Paths: `.ai-factory/` for all artifacts
 - research: `.ai-factory/RESEARCH.md`
 - verify_mode: `normal`
@@ -52,6 +55,7 @@ If config.yaml doesn't exist, use defaults:
 - `workflow.plan_id_format`: `slug`
 
 Resolved language value:
+
 - `ui_language = language.ui || "en"`
 
 All AskUserQuestion prompts, user-visible explanations, verification reports, context-gate summaries, issue remediation prompts, and next-step guidance MUST be written in `ui_language`.
@@ -99,6 +103,7 @@ Same logic as `/aif-implement` — produce the **canonical branch stem** before 
 **Note:** Plan discovery scans `paths.plans/` only. Plans archived to `paths.archive/plans/` by `/aif-archive` are excluded from discovery. If a plan is found only in the archive, emit `WARN [aif-verify] plan <name> is archived; verifying archived plan`.
 
 **If no plan file found:**
+
 ```
 AskUserQuestion: No plan file found. What should I verify?
 
@@ -128,6 +133,7 @@ This file contains project-specific rules accumulated by `/aif-evolve` from patc
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
+
 - Treat them as **project-level overrides** for this skill's general instructions
 - When a skill-context rule conflicts with a general rule written in this SKILL.md,
   **the skill-context rule wins** (more specific context takes priority — same principle as nested CLAUDE.md files)
@@ -152,6 +158,7 @@ git diff --name-only HEAD~$(number_of_tasks)..HEAD
 ```
 
 If `git.enabled = false`, skip branch diffing entirely and gather changed files from:
+
 - the working tree (if uncommitted changes exist), or
 - the recent commit window that corresponds to the implemented tasks.
 
@@ -174,6 +181,7 @@ TaskGet(taskId) → Get full description, requirements, acceptance criteria
 ### 1.2 Verify Implementation Exists
 
 For each requirement in the task description:
+
 - Use `Glob` and `Grep` to find the code that implements it
 - Read the relevant files to confirm the implementation is complete
 - Check that the implementation matches what was described, not just that "something was written"
@@ -199,6 +207,7 @@ For each task, produce a verification result:
 ```
 
 Statuses:
+
 - `✅ COMPLETE` — all requirements verified in code
 - `⚠️ PARTIAL` — some requirements implemented, some missing
 - `❌ NOT FOUND` — implementation not detected
@@ -212,14 +221,14 @@ Statuses:
 
 Detect the build system and verify the project compiles:
 
-| Detection | Command |
-|-----------|---------|
-| `go.mod` | `go build ./...` |
-| `tsconfig.json` | `npx tsc --noEmit` |
-| `package.json` with `build` script | `npm run build` (or pnpm/yarn/bun) |
-| `pyproject.toml` | `python -m py_compile` on changed files |
-| `Cargo.toml` | `cargo check` |
-| `composer.json` | `composer validate` |
+| Detection                          | Command                                 |
+| ---------------------------------- | --------------------------------------- |
+| `go.mod`                           | `go build ./...`                        |
+| `tsconfig.json`                    | `npx tsc --noEmit`                      |
+| `package.json` with `build` script | `npm run build` (or pnpm/yarn/bun)      |
+| `pyproject.toml`                   | `python -m py_compile` on changed files |
+| `Cargo.toml`                       | `cargo check`                           |
+| `composer.json`                    | `composer validate`                     |
 
 If build fails → report errors with file:line references.
 
@@ -227,13 +236,13 @@ If build fails → report errors with file:line references.
 
 If the project has tests and they were part of the plan:
 
-| Detection | Command |
-|-----------|---------|
-| `jest.config.*` or `vitest` | `npm test` |
-| `pytest` | `pytest` |
-| `go test` | `go test ./...` |
-| `phpunit.xml*` | `./vendor/bin/phpunit` |
-| `Cargo.toml` | `cargo test` |
+| Detection                   | Command                |
+| --------------------------- | ---------------------- |
+| `jest.config.*` or `vitest` | `npm test`             |
+| `pytest`                    | `pytest`               |
+| `go test`                   | `go test ./...`        |
+| `phpunit.xml*`              | `./vendor/bin/phpunit` |
+| `Cargo.toml`                | `cargo test`           |
 
 If tests fail → report which tests failed and whether they relate to the implemented tasks.
 
@@ -243,12 +252,12 @@ If no tests exist or testing was explicitly skipped in the plan → note it but 
 
 If linters are configured:
 
-| Detection | Command |
-|-----------|---------|
-| `eslint.config.*` / `.eslintrc*` | `npx eslint [changed files]` |
-| `.golangci.yml` | `golangci-lint run ./...` |
-| `ruff` in pyproject.toml | `ruff check [changed files]` |
-| `.php-cs-fixer*` | `./vendor/bin/php-cs-fixer fix --dry-run --diff` |
+| Detection                        | Command                                          |
+| -------------------------------- | ------------------------------------------------ |
+| `eslint.config.*` / `.eslintrc*` | `npx eslint [changed files]`                     |
+| `.golangci.yml`                  | `golangci-lint run ./...`                        |
+| `ruff` in pyproject.toml         | `ruff check [changed files]`                     |
+| `.php-cs-fixer*`                 | `./vendor/bin/php-cs-fixer fix --dry-run --diff` |
 
 Only lint the changed files to keep output focused.
 
@@ -324,21 +333,25 @@ Evaluate and report each gate explicitly:
   - Fail (strict mode): clear roadmap contradiction after all available roadmap context is considered
 
 Normal mode behavior:
+
 - Architecture/rules clear violations fail verification.
 - Roadmap mismatch and missing milestone linkage are warnings unless contradiction is explicit and severe.
 
 Strict mode behavior:
+
 - Architecture and rules clear violations fail verification.
 - Clear roadmap mismatch fails verification.
 - Missing milestone linkage for `feat`/`fix`/`perf` remains a warning (even when `.ai-factory/ROADMAP.md` exists).
 
 Human logging/reporting format:
+
 - Non-blocking findings: `WARN [gate-name] ...`
 - Blocking findings: `ERROR [gate-name] ...`
 
 If the user wants a standalone rules-only pass, suggest `/aif-rules-check`. Keep human context-gate labels at `WARN` / `ERROR`, then derive the final machine-readable gate result from the full verification report.
 
 Machine-readable gate result:
+
 - Append one final fenced `aif-gate-result` JSON block after the human-readable verification report.
 - Use `"gate": "verify"`.
 - Use `"status": "pass|warn|fail"` where:
@@ -454,6 +467,7 @@ Options:
 ```
 
 **If "Fix now" or "Fix critical only":**
+
 - First suggest using `/aif-fix` and pass a concise issue summary as argument
 - Example:
   - `/aif-fix complete Task #3 password reset email flow, implement Task #8 docs update, remove unfinished markers in src/services/auth.ts and src/middleware/rate-limit.ts, document SENDGRID_API_KEY in .env.example`
@@ -465,6 +479,7 @@ Options:
 - After fixing, re-run the relevant verification checks to confirm
 
 **If "Accept as-is":**
+
 - Note the accepted issues in the plan file as a comment
 - Continue to Step 5
 
@@ -540,16 +555,19 @@ Strict mode is recommended before merging to the configured base branch or creat
 ## Usage
 
 ### After implement (suggested automatically)
+
 ```
 /aif-verify
 ```
 
 ### Strict mode before merge
+
 ```
 /aif-verify --strict
 ```
 
 ### Standalone (no plan, verify branch diff)
+
 ```
 /aif-verify
 → No plan found → verify branch diff against the configured base branch

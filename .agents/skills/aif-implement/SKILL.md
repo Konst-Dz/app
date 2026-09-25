@@ -192,6 +192,7 @@ Use the resolved config from Step 0:
 
    ```markdown
    # Inline implementation
+
    - [ ] <description>
    ```
 
@@ -266,12 +267,12 @@ Then reconcile plan/task state:
 
 - Ensure the current plan file matches the current branch when git branch plans are in use (`@plan-file` override wins; otherwise branch-named plan takes priority over the resolved fast plan).
 - If `git.enabled = false` or full plans were created without a branch, prefer:
-    - explicit `@plan-file`,
-    - then the only `*.md` file in the configured plans dir,
-    - then the resolved fast plan path.
+  - explicit `@plan-file`,
+  - then the only `*.md` file in the configured plans dir,
+  - then the resolved fast plan path.
 - Compare `TaskList` statuses vs plan checkboxes.
-    - If code changes for a task appear already implemented but the task is not marked completed, verify quickly and then `TaskUpdate(..., status: "completed")` and update the plan checkbox.
-    - If a task is marked completed but the corresponding code is missing (rebase/reset happened), mark it back to pending and discuss with the user.
+  - If code changes for a task appear already implemented but the task is not marked completed, verify quickly and then `TaskUpdate(..., status: "completed")` and update the plan checkbox.
+  - If a task is marked completed but the corresponding code is missing (rebase/reset happened), mark it back to pending and discuss with the user.
 
 **If uncommitted changes exist:**
 
@@ -392,12 +393,12 @@ If any rule is violated — fix the output before presenting it to the user.
 **Patch fallback (limited, only when skill-context is missing):**
 
 - If `.ai-factory/skill-context/aif-implement/SKILL.md` does not exist and the resolved patches dir exists:
-    - Use `Glob` to find `*.md` files in the resolved patches dir
-    - Sort patch filenames ascending (lexical), then select the last **10** (or fewer if less exist)
-    - Read those selected patch files only
-    - Prioritize **Root Cause** and **Prevention** sections
+  - Use `Glob` to find `*.md` files in the resolved patches dir
+  - Sort patch filenames ascending (lexical), then select the last **10** (or fewer if less exist)
+  - Read those selected patch files only
+  - Prioritize **Root Cause** and **Prevention** sections
 - If skill-context exists, do **not** read all patches by default.
-    - Optionally read a few targeted recent patches only when a task clearly matches a known failure pattern.
+  - Optionally read a few targeted recent patches only when a task clearly matches a known failure pattern.
 
 **Use this context when implementing:**
 
@@ -642,6 +643,7 @@ To resume later, run:
 ### Step 5: Completion
 
 **Handoff sync (manual mode ONLY — skip entirely when `HANDOFF_MODE` is `1`):** If a Handoff task ID was extracted from the plan annotation AND `HANDOFF_MODE` is NOT `1`:
+
 1. Call `handoff_push_plan` with `{ taskId: <id>, planContent: <final updated plan text> }`.
 2. If `HANDOFF_SKIP_REVIEW` is `1`: call `handoff_sync_status` with `{ taskId: <id>, newStatus: "done", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: false }`.
 3. Otherwise: call `handoff_sync_status` with `{ taskId: <id>, newStatus: "review", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: true }`.
@@ -695,8 +697,8 @@ Only do this step when there is something concrete to capture.
 
 - This command may mark milestone completion when evidence is clear.
 - If milestone mapping is ambiguous, emit `WARN [roadmap] ...` and suggest the owner command:
-    - `/aif-roadmap check`
-    - or `/aif-roadmap <short update request>`
+  - `/aif-roadmap check`
+  - or `/aif-roadmap <short update request>`
 
 **RULES.md (NOT allowed in this command):**
 
@@ -761,15 +763,15 @@ If plan setting is `Docs: no` or setting is unset:
   ```
 
   **Based on choice:**
-    - "Yes, delete it" → delete the file:
-      ```bash
-      rm <resolved fast plan path>
-      ```
-    - "No, keep it" → leave the file as is, continue to the next step
+  - "Yes, delete it" → delete the file:
+    ```bash
+    rm <resolved fast plan path>
+    ```
+  - "No, keep it" → leave the file as is, continue to the next step
 
 - **If branch-named file** (e.g., `<configured plans dir>/feature-user-auth.md`):
-    - Keep it - documents what was done
-    - User can delete before merging if desired
+  - Keep it - documents what was done
+  - User can delete before merging if desired
 
 **Check if running in a git worktree:**
 

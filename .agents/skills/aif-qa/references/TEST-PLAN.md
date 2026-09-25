@@ -15,6 +15,7 @@ Check for the file `<artifact_dir>/change-summary.md`.
 Use AskUserQuestion in `ui_language`.
 Meaning: explain that the `change-summary.md` artifact was not found and a test plan cannot be created without it.
 Options meaning:
+
 1. Run change summary first with `/aif-qa change-summary <resolved_branch>`
 2. Cancel
 
@@ -71,6 +72,7 @@ Use the change summary evidence when prioritizing checks. If a high-priority tes
 ## Step 7: Save Artifact
 
 Before saving:
+
 - Verify that the document is written in `artifact_language`.
 - If most headings or body text are in another language, rewrite it before saving.
 - For `artifact_language = ru`, human-readable prose, headings, risks, priorities, checklist items, and acceptance criteria must be in Russian.
@@ -87,5 +89,6 @@ Save the result to `<artifact_dir>/test-plan.md`.
 Use AskUserQuestion in `ui_language`.
 Meaning: tell the user that the test plan was saved and ask whether to proceed to writing test cases.
 Options meaning:
+
 1. Proceed by running `/aif-qa test-cases <resolved_branch>`
 2. Stop here

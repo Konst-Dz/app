@@ -5,6 +5,7 @@ Quality gate skills keep their human-readable markdown report first, then append
 Orchestrators must parse the last `aif-gate-result` fenced block in the final gate output. Earlier fences in documentation, examples, or quoted prior output are illustrative and are not the gate result.
 
 Supported gates:
+
 - `verify` for `/aif-verify`
 - `review` for `/aif-review`
 - `security` for `/aif-security-checklist`
@@ -57,6 +58,7 @@ The fenced block language must be exactly `aif-gate-result`.
 ```
 
 Rules:
+
 - The fenced block contains JSON only. Do not include comments, trailing commas, Markdown bullets, or prose inside it.
 - `status` must be one of `pass`, `warn`, or `fail`.
 - `blocking` must be a boolean.
@@ -75,6 +77,7 @@ Rules:
 ## Suggested Next Command
 
 Allowed commands by gate:
+
 - `verify`: `/aif-fix`, `/aif-rules`, `/aif-architecture`, `/aif-roadmap`, `/aif-commit`, or `null`.
 - `review`: `/aif-fix`, `/aif-rules`, `/aif-architecture`, `/aif-roadmap`, `/aif-commit`, or `null`.
 - `security`: `/aif-fix` or `null`.

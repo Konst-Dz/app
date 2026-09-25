@@ -83,7 +83,10 @@ export interface Verse {
   text: string;
 }
 
-export async function getChapter(bookId: number, chapter: number): Promise<Verse[]> {
+export async function getChapter(
+  bookId: number,
+  chapter: number,
+): Promise<Verse[]> {
   const db = getDatabase();
   return db.getAllAsync<Verse>(
     'SELECT id, number, text FROM verses WHERE book_id = ? AND chapter = ? ORDER BY number',

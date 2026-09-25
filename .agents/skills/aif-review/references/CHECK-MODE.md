@@ -53,7 +53,7 @@ Filtered: N hidden, M adjusted, K reclassified by +check
 
 Apply the `SKILL.md` rules unchanged, with three `+check`-specific points:
 
-- **Input is the post-filter findings.** Recompute `status`, `blockers`, and `affected_files` from "Critical Issues" and "Suggestions" *after* every keep/modify/drop and severity move. A dropped critical item or a demoted finding can lower `status`; a promoted suggestion can raise it.
+- **Input is the post-filter findings.** Recompute `status`, `blockers`, and `affected_files` from "Critical Issues" and "Suggestions" _after_ every keep/modify/drop and severity move. A dropped critical item or a demoted finding can lower `status`; a promoted suggestion can raise it.
 - **Context gates are not touched.** `+check` never validates the "Context Gates" block (see "When to run" above). Carry its result over from the pre-`+check` draft unchanged and feed it into the same `status` merge — a blocking context gate keeps `status` at `fail` regardless of what the validator did to the findings, and that gate finding stays in `blockers`.
 - **`suggested_next.reason`** gains a short note mentioning `+check` and the three counters, e.g. `"After +check filtering: 2 hidden, 1 adjusted, 1 reclassified; remaining blockers require a fix pass."`.
 

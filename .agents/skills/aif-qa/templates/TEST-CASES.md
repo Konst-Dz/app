@@ -31,12 +31,12 @@
 
 ### Positive
 
-* [Test data item]
-* [Test data item]
-* [Test data item]
+- [Test data item]
+- [Test data item]
+- [Test data item]
 
 ### Negative (optional field)
 
-* [Test data item]
-* [Test data item]
-* [Test data item]
+- [Test data item]
+- [Test data item]
+- [Test data item]

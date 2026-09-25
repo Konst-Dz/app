@@ -1,7 +1,7 @@
 ---
 name: aif-loop
 description: Run a strict multi-iteration Reflex Loop with phases (PLAN, PRODUCE||PREPARE, EVALUATE, CRITIQUE, REFINE) to improve an artifact until quality gates pass or iteration limits are reached. Use when user asks for iterative refinement, quality-gated generation, or "generate -> critique -> refine" loops.
-argument-hint: "[new|resume|status|stop|list|history|clean] [task or alias]"
+argument-hint: '[new|resume|status|stop|list|history|clean] [task or alias]'
 allowed-tools: Read Write Edit Glob Grep Bash Task AskUserQuestion Questions
 disable-model-invocation: true
 ---
@@ -13,10 +13,12 @@ Run a result-focused iterative loop with strict phase contracts, evaluation rule
 ## Step 0: Load Config
 
 **FIRST:** Read `.ai-factory/config.yaml` if it exists to resolve:
+
 - **Paths:** `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.plan`, `paths.plans`, and `paths.evolution`
 - **Language:** `language.ui` for prompts, `language.artifacts` for generated content
 
 If config.yaml doesn't exist, use defaults:
+
 - Paths: `.ai-factory/` for all artifacts
 - Language: `en` (English)
 
@@ -109,6 +111,7 @@ This file contains project-specific rules accumulated by `/aif-evolve` from patc
 codebase conventions, and tech-stack analysis. These rules are tailored to the current project.
 
 **How to apply skill-context rules:**
+
 - Treat them as **project-level overrides** for this skill's general instructions
 - When a skill-context rule conflicts with a general rule written in this SKILL.md,
   **the skill-context rule wins** (more specific context takes priority — same principle as nested CLAUDE.md files)
@@ -360,7 +363,16 @@ Event names:
 `history.jsonl` example line:
 
 ```json
-{"ts":"2026-02-18T12:01:10Z","run_id":"courses-api-ddd-20260218-120000","iteration":1,"phase":"A","step":"EVALUATE","event":"evaluation_done","status":"ok","payload":{"score":0.72,"passed":false}}
+{
+  "ts": "2026-02-18T12:01:10Z",
+  "run_id": "courses-api-ddd-20260218-120000",
+  "iteration": 1,
+  "phase": "A",
+  "step": "EVALUATE",
+  "event": "evaluation_done",
+  "status": "ok",
+  "payload": { "score": 0.72, "passed": false }
+}
 ```
 
 ## Step 7: Post-Loop
@@ -381,14 +393,14 @@ After the loop stops (any reason):
    - Docs -> `/aif-docs` to integrate it
 6. Update `run.json.status` based on stop reason, and if `current.json` points to this loop, delete `current.json` (no active loop remains):
 
-| Stop reason | Status |
-|-------------|--------|
+| Stop reason         | Status      |
+| ------------------- | ----------- |
 | `threshold_reached` | `completed` |
-| `no_major_issues` | `completed` |
-| `user_stop` | `stopped` |
-| `iteration_limit` | `stopped` |
-| `stagnation` | `stopped` |
-| `phase_error` | `failed` |
+| `no_major_issues`   | `completed` |
+| `user_stop`         | `stopped`   |
+| `iteration_limit`   | `stopped`   |
+| `stagnation`        | `stopped`   |
+| `phase_error`       | `failed`    |
 
 ## Step 8: Response Format to User
 

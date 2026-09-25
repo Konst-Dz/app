@@ -27,24 +27,24 @@
 
 ### 3. Test Types
 
-| Type              | Priority   | Area                                   |
-|-------------------|------------|----------------------------------------|
-| Functional        | 🔴 High    | [Core changed functions]               |
-| Regression        | 🟡 Medium  | [Adjacent functionality]               |
-| Edge cases        | 🟡 Medium  | [Input edge cases]                     |
-| Negative          | 🟡 Medium  | [Error scenarios]                      |
-| Security          | 🔴 High    | [Only if authorization is affected]    |
+| Type       | Priority  | Area                                |
+| ---------- | --------- | ----------------------------------- |
+| Functional | 🔴 High   | [Core changed functions]            |
+| Regression | 🟡 Medium | [Adjacent functionality]            |
+| Edge cases | 🟡 Medium | [Input edge cases]                  |
+| Negative   | 🟡 Medium | [Error scenarios]                   |
+| Security   | 🔴 High   | [Only if authorization is affected] |
 
 ---
 
 ### 4. Test Data
 
-| Category          | Data      | Purpose             |
-|-------------------|-----------|---------------------|
-| Valid data        | [example] | Happy path          |
-| Boundary values   | [example] | Edge cases          |
-| Invalid data      | [example] | Negative scenarios  |
-| Special cases     | [example] | [Project-specific]  |
+| Category        | Data      | Purpose            |
+| --------------- | --------- | ------------------ |
+| Valid data      | [example] | Happy path         |
+| Boundary values | [example] | Edge cases         |
+| Invalid data    | [example] | Negative scenarios |
+| Special cases   | [example] | [Project-specific] |
 
 ---
 
@@ -68,14 +68,14 @@
 
 ### 7. Plan Risks
 
-| Risk     | Impact               | Mitigation     |
-|----------|----------------------|----------------|
-| [Risk 1] | High / Medium / Low  | [How to reduce]|
-| [Risk 2] | High / Medium / Low  | [How to reduce]|
+| Risk     | Impact              | Mitigation      |
+| -------- | ------------------- | --------------- |
+| [Risk 1] | High / Medium / Low | [How to reduce] |
+| [Risk 2] | High / Medium / Low | [How to reduce] |
 
 ### 8. Checklist
 
-| Check     | Priority              |
-|-----------|-----------------------|
-| [Check 1] | High / Medium / Low   |
-| [Check 2] | High / Medium / Low   |
+| Check     | Priority            |
+| --------- | ------------------- |
+| [Check 1] | High / Medium / Low |
+| [Check 2] | High / Medium / Low |

@@ -33,5 +33,5 @@ tests:
     POSTGRES_DB: test
     POSTGRES_USER: test
     POSTGRES_PASSWORD: test
-    DATABASE_URL: "postgresql://test:test@db:5432/test"
+    DATABASE_URL: 'postgresql://test:test@db:5432/test'
 ```

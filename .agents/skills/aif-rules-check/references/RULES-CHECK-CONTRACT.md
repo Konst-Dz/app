@@ -4,17 +4,21 @@
 **Files Checked:** <count>
 
 ### Gate Results
+
 - PASS [rules] <summary>
 - WARN [rules] <summary>
 - FAIL [rules] <summary>
 
 ### Blocking Violations
+
 - <file>: <explicit hard-rule violation tied to rule text>
 
 ### Suggested Fixes
+
 - <concrete code or workflow fix>
 
 ### Suggested Rule Updates
+
 - <candidate rule to add or clarify via /aif-rules>
 
 ### Machine-Readable Gate Result

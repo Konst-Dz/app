@@ -129,7 +129,7 @@ tasks:
     desc: Drop all tables, re-run migrations + seeds
     preconditions:
       - sh: '[ "{{.CONFIRM}}" = "yes" ]'
-        msg: "Pass CONFIRM=yes to run db:fresh (destructive)"
+        msg: 'Pass CONFIRM=yes to run db:fresh (destructive)'
     cmds:
       - '{{.PHP}} artisan migrate:fresh --seed'
 

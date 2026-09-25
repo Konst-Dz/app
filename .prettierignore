@@ -1,0 +1,5 @@
+.agents/
+.ai-factory/
+node_modules/
+/ios
+/android

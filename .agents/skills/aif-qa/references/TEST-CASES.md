@@ -18,6 +18,7 @@ Check for both files:
 Use AskUserQuestion in `ui_language`.
 Meaning: explain that the `change-summary.md` artifact was not found and test cases cannot be written without it.
 Options meaning:
+
 1. Run change summary first with `/aif-qa change-summary <resolved_branch>`
 2. Cancel
 
@@ -26,6 +27,7 @@ Options meaning:
 Use AskUserQuestion in `ui_language`.
 Meaning: explain that the `test-plan.md` artifact was not found and test cases cannot be written without it.
 Options meaning:
+
 1. Create the test plan first with `/aif-qa test-plan <resolved_branch>`
 2. Cancel
 
@@ -97,6 +99,7 @@ Apply `technical_terms_policy` from SKILL.md.
 ## Step 5: Save Artifact
 
 Before saving:
+
 - Verify that the document is written in `artifact_language`.
 - If most headings or body text are in another language, rewrite it before saving.
 - For `artifact_language = ru`, human-readable prose, headings, priorities, test names, preconditions, steps, expected results, and test data explanations must be in Russian.
@@ -111,6 +114,7 @@ After saving, offer to free up context.
 Use AskUserQuestion in `ui_language`.
 Meaning: tell the user that test cases were saved and ask whether to clear, compact, or continue.
 Options meaning:
+
 1. `/clear` — full reset (recommended)
 2. `/compact` — compress history
 3. Continue as-is

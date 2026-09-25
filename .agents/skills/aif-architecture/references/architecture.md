@@ -5,39 +5,40 @@ Reference material for architecture evaluation and generation. This content info
 ## Decision Matrix
 
 | Factor                 | Layered | Structured Modules | Explicit Architecture | Explicit Architecture (Vertical Slice) | Microservices  |
-|------------------------|---------|--------------------|-----------------------|----------------------------------------|----------------|
+| ---------------------- | ------- | ------------------ | --------------------- | -------------------------------------- | -------------- |
 | Team size              | 1-5     | 3-10               | 5-30                  | 5-30                                   | 20+            |
 | Domain complexity      | Low     | Medium             | High                  | High                                   | High           |
 | Scale requirements     | Low     | Low-Moderate       | Moderate-High         | Moderate-High                          | Very High      |
 | Feature independence   | Low     | Medium             | Medium                | High                                   | Very High      |
 | Module boundaries      | None    | Soft               | Hard                  | Hard                                   | Hard (network) |
-| Domain purity          | ❌       | Encouraged         | Enforced              | Enforced                               | Varies         |
-| Initial velocity       | ✅ Fast  | ✅ Fast             | Medium                | Medium                                 | ❌ Slow         |
-| Operational complexity | ✅ Low   | ✅ Low              | Medium                | Medium                                 | ❌ High         |
-| Testing complexity     | Medium  | Medium             | ✅ Low (ports)         | ✅ Low (ports)                          | Medium-High¹   |
-| Learning curve         | ✅ Low   | Low-Medium         | Medium-High           | Medium-High                            | High           |
+| Domain purity          | ❌      | Encouraged         | Enforced              | Enforced                               | Varies         |
+| Initial velocity       | ✅ Fast | ✅ Fast            | Medium                | Medium                                 | ❌ Slow        |
+| Operational complexity | ✅ Low  | ✅ Low             | Medium                | Medium                                 | ❌ High        |
+| Testing complexity     | Medium  | Medium             | ✅ Low (ports)        | ✅ Low (ports)                         | Medium-High¹   |
+| Learning curve         | ✅ Low  | Low-Medium         | Medium-High           | Medium-High                            | High           |
 | Deployment model       | Single  | Single             | Single                | Single                                 | Multi-service  |
 
 ¹ Unit tests are easy per service, but integration/contract tests across services add significant complexity.
 
-**Note on subvariants:** Each pattern offers multiple folder organization variants (e.g., *by technical layer*, *by vertical slice*). The matrix evaluates the architectural pattern — organization variants within the same pattern generally share the same scores because they differ in internal folder layout, not in architectural characteristics. When a variant affects feature independence (e.g., Explicit Architecture (Vertical Slices By Entity) scores higher than with Technical Layers), the matrix uses a separate column for that variant rather than showing ranges. The organization variant is chosen separately based on module/context size and feature independence needs.
+**Note on subvariants:** Each pattern offers multiple folder organization variants (e.g., _by technical layer_, _by vertical slice_). The matrix evaluates the architectural pattern — organization variants within the same pattern generally share the same scores because they differ in internal folder layout, not in architectural characteristics. When a variant affects feature independence (e.g., Explicit Architecture (Vertical Slices By Entity) scores higher than with Technical Layers), the matrix uses a separate column for that variant rather than showing ranges. The organization variant is chosen separately based on module/context size and feature independence needs.
 
 ## Terminology
 
 All folder structures in this document use consistent placeholder names:
 
-| Placeholder | Meaning | Examples | Maps to |
-|---|---|---|---|
-| `[EntityName]` | Core domain model — a data entity with identity and business rules | `User`, `Order`, `Product`, `Invoice` | Models, Repositories, Domain layer |
-| `[FeatureName]` | A use case scoped to a **single entity** | `CreateUser`, `UpdateProfile`, `DeleteProduct` | Entity slice: Controller methods, Action classes, Service classes |
-| `[ProcessName]` | An orchestration spanning **multiple entities** — cross-entity business process | `PlaceOrder`, `Checkout`, `TransferFunds`, `OnboardCustomer` | Process slice (alongside entity slices in `Slices/`) |
-| `[ModuleName]` | A feature module grouping related entities and processes (Structured Modules) | `Auth`, `Catalog`, `Payments` | Top-level module folder |
-| `[ContextName]` | A bounded context with its own ubiquitous language (Explicit Architecture) | `Identity`, `Ordering`, `Inventory` | Top-level context folder |
-| `[ServiceName]` | An independently deployable microservice | `OrderService`, `PaymentGateway` | Microservice root folder |
+| Placeholder     | Meaning                                                                         | Examples                                                     | Maps to                                                           |
+| --------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------- |
+| `[EntityName]`  | Core domain model — a data entity with identity and business rules              | `User`, `Order`, `Product`, `Invoice`                        | Models, Repositories, Domain layer                                |
+| `[FeatureName]` | A use case scoped to a **single entity**                                        | `CreateUser`, `UpdateProfile`, `DeleteProduct`               | Entity slice: Controller methods, Action classes, Service classes |
+| `[ProcessName]` | An orchestration spanning **multiple entities** — cross-entity business process | `PlaceOrder`, `Checkout`, `TransferFunds`, `OnboardCustomer` | Process slice (alongside entity slices in `Slices/`)              |
+| `[ModuleName]`  | A feature module grouping related entities and processes (Structured Modules)   | `Auth`, `Catalog`, `Payments`                                | Top-level module folder                                           |
+| `[ContextName]` | A bounded context with its own ubiquitous language (Explicit Architecture)      | `Identity`, `Ordering`, `Inventory`                          | Top-level context folder                                          |
+| `[ServiceName]` | An independently deployable microservice                                        | `OrderService`, `PaymentGateway`                             | Microservice root folder                                          |
 
 **Slice types:** Both `[EntityName]` and `[ProcessName]` live as siblings inside `Slices/`. Entity slices group use cases for a single entity. Process slices group orchestration logic that spans multiple entities.
 
 **File organization choice — "Unified vs Granular":** For each slice type, every file category (Controllers, Services, Actions, DTOs, Repositories) can be organized in two ways:
+
 - **Unified (one file per entity/process):** A single `[EntityName]Controller.{ext}` contains all handler methods. A single `[EntityName]Service.{ext}` contains all entity-scoped use cases. Simpler for small slices with few use cases.
 - **Granular (one file per feature):** Separate `[FeatureName]Controller.{ext}` or `[FeatureName]Action.{ext}` files, each handling a single use case. Better for complex slices with many use cases.
 
@@ -80,7 +81,6 @@ Monolith (any pattern) → Microservices:
 - A single team's deploy failure blocks all other teams
 ```
 
-
 ## Structured Modules
 
 **Core Principle:** A lightweight, domain-aware modular architecture. Each module encapsulates a feature area with its own routes, application services (orchestrators), rich models, and repositories. It brings the core benefits of DDD (rich models, dependency inversion) without the strict folder formalism.
@@ -90,6 +90,7 @@ Monolith (any pattern) → Microservices:
 **IMPORTANT: Domain-Centric, not Service-Centric:** Unlike traditional layered patterns, Structured Modules is **not** service-centric. The `Services/` layer acts only as Application Services (orchestrating use cases: fetch data → call model method → save). The actual core business rules, validations, and state mutations live strictly inside the `Models/` (Rich Domain Models).
 
 **Migration path to Explicit Architecture:**
+
 ```text
 Structured Modules                           Explicit Architecture
 ├── [ModuleName]/                            ├── [ContextName]/
@@ -101,10 +102,12 @@ Structured Modules                           Explicit Architecture
 ```
 
 **Organization Variants:** Within a module, code can be organized in two ways:
+
 - **By technical layer** — `Controllers/`, `Services/`, `Repositories/` as separate folders.
 - **By vertical slice (entity)** — grouping the controller, service, and repository for a specific entity into a single folder. Within each entity slice, individual use cases can optionally be extracted into separate classes. Cross-entity processes live at the module level.
 
 ### Folder Structure — Structured Modules (Technical Layer)
+
 ```text
 src/
 ├── [ModuleName]/                               # ── FEATURE MODULE ──
@@ -128,6 +131,7 @@ src/
 ```
 
 ### Folder Structure — Structured Modules (Vertical Slices By Entity)
+
 ```text
 src/
 ├── [ModuleName]/                               # ── FEATURE MODULE ──
@@ -158,11 +162,13 @@ src/
 ```
 
 **Dependency Rules (Strict Direction):**
+
 - **Strict Downward Flow:** Dependencies must point strictly in one direction: `Controllers → Services → Repositories`. Inner layers (e.g., Repositories, Models) MUST NEVER depend on outer layers (e.g., Controllers).
 - **No Layer Skipping:** Controllers must not bypass the Service layer to call Repositories directly.
 - **Module Isolation:** Modules depend on root `Infrastructure/` for shared types, utilities, and middleware, but NOT on each other's internals. Cross-module dependencies must only use defined public APIs.
 
 **Key Principles:**
+
 1. **Module Boundaries:** Each module encapsulates a feature area. Modules have a public API. Other modules MUST use this public API and never reach into internals.
 2. **Dependency Inversion (lightweight):** Services receive dependencies through constructor injection. Repository interfaces are encouraged to prepare for a future Infrastructure layer split.
 3. **Domain Awareness:** While service classes orchestrate use cases, core domain logic and validation should be pushed into the models.
@@ -170,6 +176,7 @@ src/
 5. **Infrastructure is Minimal:** The root `Infrastructure/` folder (cross-cutting concerns: Types, Utils, Middleware, Config) should stay small.
 
 **Anti-Patterns:**
+
 - ❌ **Anemic Domain Models:** Creating models that are just "data bags" (only getters/setters without behavior). Models should encapsulate their own invariants and rules. This prevents logic from leaking into services and prepares the ground for Explicit Architecture.
 - ❌ **Layer Skipping:** Controllers interacting directly with Repositories.
 - ❌ **Upward Dependencies:** Services importing Controllers, or Models importing Services.
@@ -182,6 +189,7 @@ src/
 **Domain-Driven Design (DDD)** is primarily about domain modeling: defining a ubiquitous language, identifying bounded contexts, and organizing logic into aggregates, entities, and value objects. DDD is **not** a folder structure. Explicit Architecture provides a way to structure code that implements DDD concepts cleanly.
 
 **Architecture Layers** (5 concentric layers, innermost to outermost):
+
 ```text
 ┌─────────────────────────────────────────────────────┐
 │  5. CONFIGURATION / COMPOSITION ROOT                │  DI container, wiring, bootstrap
@@ -200,6 +208,7 @@ src/
 **Dependency rule:** Dependencies point INWARD. Outer layers implement interfaces (ports) defined by inner layers. Inner layers NEVER import from outer layers.
 
 **Organization Variants:** Within each bounded context, code can be organized in three ways:
+
 - **By technical layer** — Application/, Infrastructure/, Presentation/ as separate top-level folders inside the context.
 - **By vertical slice (entity)** — each entity (`[EntityName]`) gets its own folder containing its Application, Infrastructure, and Presentation subfolders. Within each entity slice, individual use cases are organized as `[FeatureName]` actions. Domain stays shared across slices within the context.
 - **Flat vertical slice (simplified)** — same as vertical slice but all related files (controllers, DTOs, services) live side-by-side within the entity folder, omitting the Application/Infrastructure/Presentation subfolders. Individual use cases are still represented as `[FeatureName]` files. Best for smaller entities or when maximum cohesion is preferred over strict layer separation.
@@ -344,8 +353,9 @@ src/
 ### Core Principles
 
 1. **Bounded Contexts:** Each bounded context represents a distinct business domain with its own ubiquitous language. A bounded context is a good candidate for extraction into its own microservice, though extraction usually requires operational, persistence, integration, and deployment work.
-  - Cross-context communication happens through DTOs, facades, or domain events.
-  - **Context Mapping:** Contexts communicate through strategic DDD relationship patterns like Customer/Supplier or Anti-Corruption Layer (ACL). Note that a Context Map is a strategic view of your system; an ACL is a specific integration pattern used within that map.
+
+- Cross-context communication happens through DTOs, facades, or domain events.
+- **Context Mapping:** Contexts communicate through strategic DDD relationship patterns like Customer/Supplier or Anti-Corruption Layer (ACL). Note that a Context Map is a strategic view of your system; an ACL is a specific integration pattern used within that map.
 
 2. **Domain Layer Purity:** The domain layer has ZERO dependencies on frameworks, databases, or external services. Contains Entities, Aggregates, Value Objects, Domain Events, Ports (interfaces), and Domain Exceptions.
 
@@ -361,6 +371,7 @@ src/
    - This enables testing the domain logic in isolation and swapping implementations without affecting the domain.
 
 **Anti-Patterns:**
+
 - ❌ Anemic Domain Model — entities with only getters/setters and no behavior.
 - ❌ Leaking dependencies inward — importing framework types in the domain layer.
 - ❌ CQRS everywhere — applying strict command/query separation to simple CRUD screens.
@@ -374,11 +385,13 @@ src/
 **Why this architecture exists:** Well-structured monoliths — even those using Explicit Architecture with clean bounded contexts — eventually hit organizational and operational ceilings. A single deployment artifact forces every team to coordinate releases. A single database becomes a scaling bottleneck. A single runtime means one team's memory leak or CPU spike affects everyone. Microservices solve this by giving each team full ownership of their service's lifecycle — from development through deployment to monitoring. The tradeoff is significant operational complexity: distributed tracing, network-level failure modes, data consistency challenges, and the need for mature DevOps practices. This architecture pays off only when the organizational and scaling pain of a monolith outweighs the operational cost of distribution.
 
 **When to Use:**
+
 - Large teams needing independent deployment
 - Different scaling requirements per service
 - Polyglot persistence needs
 
 **When NOT to Use:**
+
 - Small team (< 10 people)
 - Unclear domain boundaries
 - Startups exploring product-market fit
@@ -436,6 +449,7 @@ repo-root/
 ```
 
 **Monorepo vs Polyrepo:**
+
 - **Monorepo** — all services in one repository. Easier code sharing, atomic cross-service refactors, single CI pipeline. Works well when services share contracts or evolve together.
 - **Polyrepo** — one repository per service. Stronger isolation, independent release cycles, clearer ownership boundaries. Better for large organizations with autonomous teams.
 
@@ -455,6 +469,7 @@ repo-root/
 - **API Entry Point:** Use an **API Gateway or BFF** (Backend for Frontend) to aggregate data, handle cross-cutting concerns (auth, rate limiting), and hide the internal service topology.
 
 **Anti-Patterns:**
+
 - ❌ **Distributed Monolith:** Services coupled via synchronous calls, must deploy together — negates all benefits.
 - ❌ **Shared Database:** Multiple services accessing the same tables — hidden coupling, no independent deployment.
 - ❌ **Chatty Services:** Long synchronous call chains for a single request — multiplied latency and failure points.
@@ -533,6 +548,7 @@ src/                                         src/
 ```
 
 **Anti-Patterns:**
+
 - ❌ **God Controller:** A controller that contains business logic, database calls, and response formatting all in one method. Split into controller (HTTP) + service (logic) + repository (data).
 - ❌ **Business Logic in Routes/Middleware:** Placing validation rules, authorization checks with business context, or data transformations in middleware. Middleware handles cross-cutting concerns (auth token verification, rate limiting, request logging), not domain rules.
 - ❌ **Layer Skipping:** Controllers calling repositories directly, or routes calling services without going through controllers.
@@ -691,10 +707,12 @@ class PlaceOrderService {
 ```
 
 **When to use a Domain Service:**
+
 - Logic involves **2+ entities/aggregates** and doesn't naturally belong to either one
 - The operation is a **pure business rule** (no I/O, no infrastructure)
 - Putting the logic in one entity would create an awkward dependency on the other
 
 **When NOT to use (keep logic in the entity):**
+
 - The rule involves only **one entity's own state** (e.g., `order.addItem()` — use the entity method)
 - You're tempted to create a Domain Service for every operation — this leads to anemic models with all logic in services

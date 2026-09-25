@@ -15,6 +15,7 @@ If `git_enabled = false`, the current directory is not a git work tree, or requi
 Use AskUserQuestion in `ui_language`.
 Meaning: ask the user to provide change context for the QA summary.
 Options meaning:
+
 1. Paste a diff or PR description
 2. Provide a changed-file list
 3. Provide a short implementation summary
@@ -79,11 +80,13 @@ git log <effective_base>..<analysis_target> --oneline
 Use AskUserQuestion in `ui_language`.
 Meaning: tell the user that `<N>` commits were found and ask whether to analyze all commits, only the last 20, or cancel.
 Options meaning:
+
 1. Analyze all `<N>` commits
 2. Analyze only the last 20
 3. Cancel
 
 Based on choice:
+
 - "Analyze all" → keep `analysis_base = <effective_base>`
 - "Analyze only the last 20" → select the 20 most recent commits from the full range, find the oldest commit in that subset, and set `analysis_base = <oldest_selected_commit>^`
   - This `^` shorthand uses Git's first-parent semantics for the selected oldest commit.
@@ -110,11 +113,13 @@ git diff <analysis_base>...<analysis_target>
 Use AskUserQuestion in `ui_language`.
 Meaning: tell the user that the diff is large (`<N>` lines) and ask whether to read it fully, analyze important files individually, or cancel.
 Options meaning:
+
 1. Continue and read the full diff
 2. Read changed files individually instead (recommended for large diffs)
 3. Cancel
 
 Based on choice:
+
 - "Continue" → use the full diff as-is
 - "Read files individually" → skip the raw full diff; proceed to Step 2 and read targeted per-file diffs/content
 - "Cancel" → **STOP**
@@ -149,6 +154,7 @@ Task(subagent_type: Explore, prompt:
 **Fallback:** If the Task tool is unavailable, read the key files directly using Read/Grep.
 
 After agents return, synthesize findings to understand:
+
 - What business logic actually changed
 - What dependent code could be affected
 - What integration points are at risk
@@ -191,6 +197,7 @@ The summary must include an `Evidence` section (localized heading is allowed) th
 ## Step 5: Save Artifact
 
 Before saving:
+
 - Verify that the document is written in `artifact_language`.
 - If most headings or body text are in another language, rewrite it before saving.
 - For `artifact_language = ru`, human-readable prose, headings, risks, priorities, and recommendations must be in Russian.
@@ -213,5 +220,6 @@ Save the result to `<artifact_dir>/change-summary.md`.
 Use AskUserQuestion in `ui_language`.
 Meaning: tell the user that the change summary was saved and ask whether to proceed to the test plan.
 Options meaning:
+
 1. Proceed by running `/aif-qa test-plan <resolved_branch>`
 2. Stop here

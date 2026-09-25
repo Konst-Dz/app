@@ -1,14 +1,15 @@
 # Angie Docker ACME Reference
 
 > Sources:
+>
 > - https://en.angie.software/angie/docs/configuration/
 > - https://en.angie.software/angie/docs/configuration/acme/
 > - https://en.angie.software/angie/docs/configuration/modules/http/http_acme/
 > - https://en.angie.software/angie/docs/configuration/modules/http/http_ssl/
 > - https://en.angie.software/angie/docs/configuration/modules/stream/stream_acme/
 > - https://en.angie.software/angie/docs/installation/docker/
-> Created: 2026-05-11
-> Updated: 2026-05-11
+>   Created: 2026-05-11
+>   Updated: 2026-05-11
 
 ## Overview
 
@@ -32,23 +33,23 @@ For Docker-based projects, the key operational point is that a separate Certbot 
 
 ## Configuration
 
-| Directive / option | Context | Default / values | Notes |
-|---|---|---|---|
-| `acme name;` | `server` | none | Enables ACME for the domains in this server block's `server_name`. |
-| `acme_client name uri ...;` | `http` | none | Defines a named ACME client used by `acme` and the `$acme_cert_*` variables. |
-| `enabled=` | `acme_client` | `on` | Enables or disables renewal without removing the client from config. |
-| `key_type=` | `acme_client` | `ecdsa`; valid: `rsa`, `ecdsa` | Certificate key algorithm. |
-| `key_bits=` | `acme_client` | `256` for `ecdsa`, `2048` for `rsa` | Certificate key size. |
-| `email=` | `acme_client` | none | Email for the CA account. |
-| `renew_before_expiry=` | `acme_client` | `30d` | How early renewal starts before expiration. |
-| `renew_on_load` | `acme_client` | off unless present | Forces renewal on config load; use carefully because of CA rate limits. |
-| `retry_after_error=` | `acme_client` | `2h`; can be `off` | Delay before retry after an issuance or renewal error. |
-| `challenge=` | `acme_client` | `http`; valid: `dns`, `http`, `alpn` | Wildcard domains require `challenge=dns`. |
-| `account_key=` | `acme_client` | generated when omitted | Full path to the PEM account key. If missing, Angie attempts to create it. |
-| `acme_client_path path;` | `http` | build-time path | Overrides the certificate/key storage directory. Set this explicitly in Docker. |
-| `acme_http_port` | `http` | `80` | HTTP challenge port. If nothing listens on the address/port, the module creates a dedicated listener. |
-| `acme_dns_port` | `http` | `53` | UDP port for DNS challenge. Ports `<=1024` require superuser privileges. |
-| `acme_max_response_size` | `http` | `32k` | Increase if Angie logs a too-large ACME subrequest response. |
+| Directive / option          | Context       | Default / values                     | Notes                                                                                                 |
+| --------------------------- | ------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `acme name;`                | `server`      | none                                 | Enables ACME for the domains in this server block's `server_name`.                                    |
+| `acme_client name uri ...;` | `http`        | none                                 | Defines a named ACME client used by `acme` and the `$acme_cert_*` variables.                          |
+| `enabled=`                  | `acme_client` | `on`                                 | Enables or disables renewal without removing the client from config.                                  |
+| `key_type=`                 | `acme_client` | `ecdsa`; valid: `rsa`, `ecdsa`       | Certificate key algorithm.                                                                            |
+| `key_bits=`                 | `acme_client` | `256` for `ecdsa`, `2048` for `rsa`  | Certificate key size.                                                                                 |
+| `email=`                    | `acme_client` | none                                 | Email for the CA account.                                                                             |
+| `renew_before_expiry=`      | `acme_client` | `30d`                                | How early renewal starts before expiration.                                                           |
+| `renew_on_load`             | `acme_client` | off unless present                   | Forces renewal on config load; use carefully because of CA rate limits.                               |
+| `retry_after_error=`        | `acme_client` | `2h`; can be `off`                   | Delay before retry after an issuance or renewal error.                                                |
+| `challenge=`                | `acme_client` | `http`; valid: `dns`, `http`, `alpn` | Wildcard domains require `challenge=dns`.                                                             |
+| `account_key=`              | `acme_client` | generated when omitted               | Full path to the PEM account key. If missing, Angie attempts to create it.                            |
+| `acme_client_path path;`    | `http`        | build-time path                      | Overrides the certificate/key storage directory. Set this explicitly in Docker.                       |
+| `acme_http_port`            | `http`        | `80`                                 | HTTP challenge port. If nothing listens on the address/port, the module creates a dedicated listener. |
+| `acme_dns_port`             | `http`        | `53`                                 | UDP port for DNS challenge. Ports `<=1024` require superuser privileges.                              |
+| `acme_max_response_size`    | `http`        | `32k`                                | Increase if Angie logs a too-large ACME subrequest response.                                          |
 
 ## Docker Pattern
 
@@ -59,8 +60,8 @@ services:
   angie:
     image: docker.angie.software/angie:1.11.4
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./docker/angie/default.conf:/etc/angie/http.d/default.conf:ro
       - angie_acme:/var/lib/angie/acme
