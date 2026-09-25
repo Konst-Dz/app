@@ -29,7 +29,7 @@ Rationale: План закрывает первый этап роадмапа �
 ## Tasks
 
 ### Phase 1: Скелет Expo
-- [ ] Task 1: Сгенерировать шаблон Expo и влить его в репозиторий
+- [x] Task 1: Сгенерировать шаблон Expo и влить его в репозиторий
   - `npx create-expo-app@latest /tmp/expo-scaffold --template default --no-install`
   - Перенести все файлы шаблона из /tmp/expo-scaffold в корень проекта, КРОМЕ `.gitignore` и служебных (.git, node_modules)
   - Влить Expo-специфичные строки шаблонного `.gitignore` в существующий (если их там нет)
@@ -37,7 +37,7 @@ Rationale: План закрывает первый этап роадмапа �
   - `npm install` в корне проекта
   - Файлы: `package.json`, `app.json`, `app/`, `assets/`, `.gitignore`
   - Логирование: не требуется (нет логики)
-- [ ] Task 2: Включить TypeScript strict и алиас путей (зависит от Task 1)
+- [x] Task 2: Включить TypeScript strict и алиас путей (зависит от Task 1)
   - `tsconfig.json`: extends `expo/tsconfig.base`, `"strict": true`, `paths: { "@/*": ["./*"] }`
   - Проверка: `npx tsc --noEmit` проходит без ошибок
   - Логирование: не требуется

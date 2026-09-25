@@ -3,6 +3,13 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+.kotlin/
+.metro-health-check*
+*.tsbuildinfo
+.env*.local
+
+/ios
+/android
 
 npm-debug.*
 yarn-debug.*
