@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "react-native-best-practices": {
+      "source": "../../../../tmp/skills-src/callstack",
+      "sourceType": "local",
+      "computedHash": "4b2b9561ff7b4b9d15ff76d2dd2a6191e3cdc7f36c06d171e377bfefcbcb2bfb"
+    },
+    "vercel-react-native-skills": {
+      "source": "../../../../tmp/skills-src/vercel",
+      "sourceType": "local",
+      "computedHash": "2e9088a7333666d8c2833b8ff58bd51b955501c42b4c7244f72b4cbf22dafcc4"
+    }
+  }
+}
