@@ -16,25 +16,26 @@
 ## Структура проекта
 
 ```
-app/                      # корень проекта (рабочая папка)
-├── .agents/skills/       # скиллы: aif-*, vercel-react-native-skills, react-native-best-practices
-├── .ai-factory/          # контекст агентов: описание, архитектура, правила, планы
-├── app/                  # экраны и маршруты expo-router (создаётся с каркасом)
-├── components/           # переиспользуемые UI-компоненты (создаётся с каркасом)
-├── features/             # доменная логика: поиск, закладки, настройки (создаётся с каркасом)
-├── db/                   # схема и доступ к SQLite (создаётся с каркасом)
-├── theme/                # дизайн-токены (создаётся с каркасом)
-└── docs/                 # документация (наполняется /aif-docs)
+app/                      корень проекта (рабочая папка)
+├── .agents/skills/       скиллы: aif-*, vercel-react-native-skills, react-native-best-practices
+├── .ai-factory/          контекст агентов: описание, архитектура, правила, планы
+├── app/                  маршруты expo-router (тонкие экраны-обёртки)
+├── components/           общие UI-компоненты без домена
+├── db/                   доступ к SQLite (database.ts)
+├── features/             фичи: reading, search, bookmarks, settings (components/hooks/api + index.ts)
+├── theme/                дизайн-токены (tokens.ts) и ThemeContext
+└── assets/               иконки и сплэш
 ```
 
 ## Ключевые точки входа
 
-| Файл                      | Назначение                                                   |
-| ------------------------- | ------------------------------------------------------------ |
-| `package.json`            | Зависимости и скрипты (создаётся вместе с каркасом Expo)     |
-| `app.json`                | Конфигурация Expo (создаётся вместе с каркасом)              |
-| `tsconfig.json`           | Strict-конфигурация TypeScript (создаётся вместе с каркасом) |
-| `.ai-factory/config.yaml` | Конфиг AI Factory: языки (ru/ru), пути, git (отключён)       |
+| Файл | Назначение |
+|------|------------|
+| `package.json` | Зависимости (Expo SDK 57, RN 0.86) и скрипты: `start`, `lint`, `format`, `typecheck` |
+| `app.json` | Конфигурация Expo (имя Bible Reader, схема biblereader) |
+| `tsconfig.json` | Strict-конфигурация TypeScript, алиас `@/*` |
+| `eslint.config.js` | ESLint на eslint-config-expo |
+| `.ai-factory/config.yaml` | Конфиг AI Factory: языки (ru/ru), пути, git (включён) |
 
 ## Документация
 

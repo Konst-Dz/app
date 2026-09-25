@@ -74,7 +74,7 @@ Rationale: План закрывает первый этап роадмапа �
 
 ### Phase 3: Витрина и GitHub
 
-- [ ] Task 7: README для GitHub-витрины (зависит от Task 5)
+- [x] Task 7: README для GitHub-витрины (зависит от Task 5)
   - На английском (публичный артефакт портфолио): описание, стек, запуск (`npm install`, `npx expo start`), раздел Roadmap
   - Файл: `README.md`
   - Логирование: не требуется
