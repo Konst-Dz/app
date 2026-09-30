@@ -27,15 +27,23 @@ Scan the QR code with the Expo Go app on an Android device.
 | `npm run lint` | ESLint (expo config) |
 | `npm run format` | Prettier |
 | `npm run typecheck` | TypeScript strict check |
+| `npm run build:db` | Rebuild the bundled Bible database asset |
+| `npm test` | Jest tests (database build pipeline) |
 
 ## Architecture
 
 Feature-based structure: every domain area (reading, search, bookmarks, settings) owns its components, hooks and data access. Screens are thin expo-router routes, SQL lives only inside feature repositories, design tokens live in `theme/`. See [`.ai-factory/ARCHITECTURE.md`](.ai-factory/ARCHITECTURE.md) for the full contract.
 
+## Documentation
+
+| Guide | Description |
+| ----- | ----------- |
+| [Database](docs/database.md) | Bundled bible.db: sources, composition, build and validation |
+
 ## Roadmap
 
 - [x] Project scaffold (Expo, strict TypeScript, feature-based architecture)
-- [ ] Local SQLite database (books, chapters, verses, footnotes)
+- [x] Local SQLite database (books, chapters, verses, footnotes)
 - [ ] Reading screen
 - [ ] Full-text search
 - [ ] Bookmarks and reading history
