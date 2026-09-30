@@ -30,9 +30,11 @@
     "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.29.7",
     "@types/react": "~19.2.2",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~57.0.2",
+    "jest": "^30.5.2",
     "prettier": "^3.9.9",
     "typescript": "~6.0.3"
   },
@@ -44,7 +46,8 @@
     "lint": "expo lint",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "build:db": "node scripts/build-db.mjs"
+    "build:db": "node scripts/build-db.mjs",
+    "test": "jest"
   },
   "private": true
 }

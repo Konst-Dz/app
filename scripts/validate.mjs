@@ -95,7 +95,7 @@ export function validateDatasets(datasets, logger) {
     for (const message of errors) {
       logger.error(`Validation failed: ${message}`);
     }
-    throw new Error(`Dataset validation failed with ${errors.length} error(s)`);
+    throw new Error(`Dataset validation failed:\n- ${errors.join('\n- ')}`);
   }
   logger.info('Dataset validation passed', { translations: datasets.length, warnings: warnings.length });
 }

@@ -1,10 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { synodalRu } from './synodalRu.mjs';
 import { kjvEn } from './kjvEn.mjs';
+import { DATA_DIR } from '../paths.mjs';
 
-const DATA_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const BASE_URL = 'https://api.getbible.net/v2';
 const REQUEST_DELAY_MS = 250;
 const RETRY_DELAY_MS = 1000;

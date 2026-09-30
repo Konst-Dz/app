@@ -1,13 +1,9 @@
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, readFileSync, renameSync, rmSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { loadSources } from './sources/index.mjs';
 import { validateDatasets } from './validate.mjs';
-
-const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url));
-const SCHEMA_PATH = resolve(SCRIPTS_DIR, 'schema.sql');
-const DEFAULT_OUTPUT_PATH = resolve(SCRIPTS_DIR, '..', 'assets', 'db', 'bible.db');
+import { DEFAULT_OUTPUT_PATH, SCHEMA_PATH } from './paths.mjs';
 
 const SCHEMA_VERSION = '1';
 const LOG_LEVELS = { debug: 10, info: 20, warn: 30, error: 40 };
@@ -188,6 +184,9 @@ async function main() {
   }
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  await main();
+if (process.argv[1] && process.argv[1].endsWith('build-db.mjs')) {
+  main().catch((error) => {
+    console.error(`[error] Unhandled build failure: ${error.message}`);
+    process.exitCode = 1;
+  });
 }
