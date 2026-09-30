@@ -33,3 +33,5 @@ AGENTS.md
 .ai-factory.json
 .ai-factory
 .vscode
+
+scripts/data/getbible/

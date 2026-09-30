@@ -43,7 +43,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:db": "node scripts/build-db.mjs"
   },
   "private": true
 }
