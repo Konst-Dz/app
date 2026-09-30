@@ -24,7 +24,7 @@ npm run build:db
 npm test
 ```
 
-- `build:db` downloads raw book JSON files into `scripts/data/getbible/` (gitignored cache), validates the datasets, and writes `assets/db/bible.db`. Re-runs are offline — the cache is reused.
+- `build:db` downloads raw book JSON files into `scripts/data/getbible/` (gitignored cache), validates the datasets, and writes `assets/db/bible.db`. Re-runs are offline — the cache is reused. Set `LOG_LEVEL=debug` for verbose stdout; the default level is `info`.
 - `test` runs the Jest suite (`scripts/__tests__/`), which covers the build pipeline, the data validator, and a smoke test against the real committed asset.
 
 ## Data source
