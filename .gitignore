@@ -3,6 +3,13 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+.kotlin/
+.metro-health-check*
+*.tsbuildinfo
+.env*.local
+
+/ios
+/android
 
 npm-debug.*
 yarn-debug.*
@@ -21,3 +28,8 @@ yarn-error.*
 
 .DS_Store
 .idea/
+.agents
+AGENTS.md
+.ai-factory.json
+.ai-factory
+.vscode

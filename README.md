@@ -1,0 +1,45 @@
+# Bible Reader
+
+Offline Bible reading app for Android, built with React Native and Expo. A portfolio project that goes from scaffold to a published Google Play release.
+
+## Stack
+
+- TypeScript (strict mode)
+- React Native + Expo (SDK 57)
+- expo-router (file-based navigation)
+- expo-sqlite (local SQLite + FTS5, fully offline)
+
+## Getting started
+
+```bash
+npm install
+npx expo start
+```
+
+Scan the QR code with the Expo Go app on an Android device.
+
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm start` | Start Metro bundler |
+| `npm run android` | Start on a connected Android device/emulator |
+| `npm run lint` | ESLint (expo config) |
+| `npm run format` | Prettier |
+| `npm run typecheck` | TypeScript strict check |
+
+## Architecture
+
+Feature-based structure: every domain area (reading, search, bookmarks, settings) owns its components, hooks and data access. Screens are thin expo-router routes, SQL lives only inside feature repositories, design tokens live in `theme/`. See [`.ai-factory/ARCHITECTURE.md`](.ai-factory/ARCHITECTURE.md) for the full contract.
+
+## Roadmap
+
+- [x] Project scaffold (Expo, strict TypeScript, feature-based architecture)
+- [ ] Local SQLite database (books, chapters, verses, footnotes)
+- [ ] Reading screen
+- [ ] Full-text search
+- [ ] Bookmarks and reading history
+- [ ] Footnotes
+- [ ] Settings and theming
+- [ ] Release build via EAS Build
+- [ ] Google Play publication
