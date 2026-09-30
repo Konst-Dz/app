@@ -1,7 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
+import { SQLiteProvider } from 'expo-sqlite';
+import { Suspense, type ComponentProps } from 'react';
 import { Tabs } from 'expo-router';
-import type { ComponentProps } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DATABASE_ASSET_SOURCE, DATABASE_NAME, initDatabase } from '@/db/database';
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext';
 
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
@@ -22,10 +26,39 @@ const TABS: TabDescriptor[] = [
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <RootTabs />
+      <ErrorBoundary>
+        <Suspense fallback={<DatabaseFallback />}>
+          <SQLiteProvider
+            databaseName={DATABASE_NAME}
+            assetSource={DATABASE_ASSET_SOURCE}
+            onInit={initDatabase}
+            useSuspense
+          >
+            <RootTabs />
+          </SQLiteProvider>
+        </Suspense>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }
+
+function DatabaseFallback() {
+  const { palette } = useTheme();
+
+  return (
+    <View style={[styles.fallback, { backgroundColor: palette.background }]}>
+      <ActivityIndicator color={palette.primary} size="large" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  fallback: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+});
 
 function RootTabs() {
   const { palette } = useTheme();
