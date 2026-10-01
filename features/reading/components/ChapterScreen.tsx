@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { StatusView } from '@/components/StatusView';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
@@ -11,7 +12,6 @@ import { DEFAULT_TRANSLATION } from '../api/readingRepository';
 import { useChapter } from '../hooks/useChapter';
 import { getAdjacentChapter } from '../lib/navigation';
 import { ChapterHeader } from './ChapterHeader';
-import { StatusView } from './StatusView';
 import { VerseList } from './VerseList';
 
 function parseRouteNumber(value: string | string[] | undefined): number | null {
@@ -26,7 +26,7 @@ function parseRouteNumber(value: string | string[] | undefined): number | null {
 }
 
 export function ChapterScreen() {
-  const { palette, fontSizes } = useTheme();
+  const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ book: string; chapter: string }>();
   const [reloadKey, setReloadKey] = useState(0);

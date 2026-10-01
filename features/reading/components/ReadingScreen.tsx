@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import type { Book } from '@/db/models';
+import { StatusView } from '@/components/StatusView';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
@@ -16,7 +17,6 @@ import { DEFAULT_TRANSLATION } from '../api/readingRepository';
 import { useBooks } from '../hooks/useBooks';
 import { groupBooksByTestament } from '../lib/books';
 import { BookRow } from './BookRow';
-import { StatusView } from './StatusView';
 
 export function ReadingScreen() {
   const { palette, fontSizes } = useTheme();
