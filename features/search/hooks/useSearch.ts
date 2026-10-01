@@ -1,7 +1,6 @@
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useMemo, useState } from 'react';
 
-import { DEFAULT_TRANSLATION } from '@/features/reading';
 import { toError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
@@ -28,7 +27,7 @@ const IDLE_STATE: SearchState = {
 
 export function useSearch(
   query: string,
-  translationCode: string = DEFAULT_TRANSLATION,
+  translationCode: string,
   reloadKey: number = 0,
 ): SearchState {
   const db = useSQLiteContext();
@@ -45,7 +44,13 @@ export function useSearch(
 
     let cancelled = false;
     const timer = setTimeout(() => {
-      setState({ query, reloadKey, results: null, isLoading: true, error: null });
+      setState({
+        query,
+        reloadKey,
+        results: null,
+        isLoading: true,
+        error: null,
+      });
       logger.debug('useSearch', 'Search started', {
         queryLength: query.length,
         translationCode,
@@ -56,7 +61,13 @@ export function useSearch(
           if (cancelled) {
             return;
           }
-          setState({ query, reloadKey, results, isLoading: false, error: null });
+          setState({
+            query,
+            reloadKey,
+            results,
+            isLoading: false,
+            error: null,
+          });
           logger.debug('useSearch', 'Search results ready', {
             count: results.length,
           });
@@ -66,7 +77,13 @@ export function useSearch(
             return;
           }
           const error = toError(cause);
-          setState({ query, reloadKey, results: null, isLoading: false, error });
+          setState({
+            query,
+            reloadKey,
+            results: null,
+            isLoading: false,
+            error,
+          });
           logger.error('useSearch', 'Failed to search verses', {
             queryLength: query.length,
             message: error.message,

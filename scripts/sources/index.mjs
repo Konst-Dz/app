@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { synodalRu } from './synodalRu.mjs';
 import { kjvEn } from './kjvEn.mjs';
+import { loadFootnotes } from './footnotes.mjs';
 import { DATA_DIR } from '../paths.mjs';
 
 const BASE_URL = 'https://api.getbible.net/v2';
@@ -54,5 +55,6 @@ export async function loadSources(logger) {
     }
     datasets.push(adapter.parse(rawBooksByNr, logger));
   }
-  return datasets;
+  const footnotes = await loadFootnotes(logger);
+  return { datasets, footnotes };
 }

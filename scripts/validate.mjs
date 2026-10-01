@@ -99,3 +99,33 @@ export function validateDatasets(datasets, logger) {
   }
   logger.info('Dataset validation passed', { translations: datasets.length, warnings: warnings.length });
 }
+
+export function validateFootnoteCounts(stats, footnotes, logger) {
+  if (!footnotes || footnotes.stats.footnotes === 0) {
+    logger.info('No footnote source provided, skipping footnote count validation');
+    return;
+  }
+
+  const sourceTotal = footnotes.stats.footnotes;
+  const insertedTotal = stats.reduce((sum, stat) => sum + (stat.footnotes ?? 0), 0);
+
+  if (insertedTotal === 0) {
+    throw new Error(`Footnote source provided ${sourceTotal} notes, but none were inserted into the database`);
+  }
+  if (insertedTotal > sourceTotal) {
+    throw new Error(`Inserted ${insertedTotal} footnotes, but the source provided only ${sourceTotal}`);
+  }
+  if (insertedTotal < sourceTotal) {
+    logger.warn('Some source footnotes did not match dataset verses', {
+      sourceTotal,
+      insertedTotal,
+      difference: sourceTotal - insertedTotal,
+    });
+  }
+
+  for (const stat of stats) {
+    if ((stat.footnotes ?? 0) === 0) {
+      logger.info('Translation has no footnotes', { translation: stat.code });
+    }
+  }
+}

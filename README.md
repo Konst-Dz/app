@@ -47,7 +47,7 @@ Feature-based structure: every domain area (reading, search, bookmarks, settings
 - [x] Reading screen
 - [x] Full-text search
 - [x] Bookmarks and reading history
-- [ ] Footnotes
-- [ ] Settings and theming
+- [x] Footnotes (KJV with Apocrypha; the Synodal text has no public-domain footnotes)
+- [ ] Settings and theming (translation selection done; font size and theme toggle pending)
 - [ ] Release build via EAS Build
 - [ ] Google Play publication

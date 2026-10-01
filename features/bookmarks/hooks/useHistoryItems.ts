@@ -1,7 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 
-import { DEFAULT_TRANSLATION } from '@/db/content';
+import { useSelectedTranslation } from '@/features/settings';
 import { logger } from '@/lib/logger';
 
 import type { ReadingPosition } from '../api/historyRepository';
@@ -33,7 +33,11 @@ export function useHistoryItems(
   positions: ReadingPosition[] | null,
   enabled: boolean,
 ): HistoryItemsState {
-  const [state, setState] = useState<HistoryItemsState>({ items: [], isReady: false });
+  const { translationCode } = useSelectedTranslation();
+  const [state, setState] = useState<HistoryItemsState>({
+    items: [],
+    isReady: false,
+  });
 
   useEffect(() => {
     if (!enabled || !db || !positions) {
@@ -46,13 +50,15 @@ export function useHistoryItems(
     }
 
     let cancelled = false;
-    logger.debug('useHistoryItems', 'Enriching history', { count: positions.length });
+    logger.debug('useHistoryItems', 'Enriching history', {
+      count: positions.length,
+    });
 
     const lookups = positions.map(async (position): Promise<HistoryItem> => {
       try {
         const shortTitle = await getBookShortTitle(
           db,
-          DEFAULT_TRANSLATION,
+          translationCode,
           position.bookUniversalId,
         );
         if (!shortTitle) {
@@ -85,13 +91,15 @@ export function useHistoryItems(
         return;
       }
       setState({ items, isReady: true });
-      logger.debug('useHistoryItems', 'History enriched', { count: items.length });
+      logger.debug('useHistoryItems', 'History enriched', {
+        count: items.length,
+      });
     });
 
     return () => {
       cancelled = true;
     };
-  }, [db, positions, enabled]);
+  }, [db, positions, enabled, translationCode]);
 
   return state;
 }

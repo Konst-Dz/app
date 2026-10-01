@@ -4,28 +4,35 @@ import { Suspense, useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { DATABASE_ASSET_SOURCE, DATABASE_NAME, initDatabase } from '@/db/database';
+import {
+  DATABASE_ASSET_SOURCE,
+  DATABASE_NAME,
+  initDatabase,
+} from '@/db/database';
+import { TranslationProvider } from '@/features/settings';
 import { logger } from '@/lib/logger';
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext';
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <ErrorBoundary>
-        <Suspense fallback={<DatabaseFallback />}>
-          <SQLiteProvider
-            databaseName={DATABASE_NAME}
-            assetSource={DATABASE_ASSET_SOURCE}
-            onInit={initDatabase}
-            useSuspense
-          >
-            <RouteLogger />
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-          </SQLiteProvider>
-        </Suspense>
-      </ErrorBoundary>
+      <TranslationProvider>
+        <ErrorBoundary>
+          <Suspense fallback={<DatabaseFallback />}>
+            <SQLiteProvider
+              databaseName={DATABASE_NAME}
+              assetSource={DATABASE_ASSET_SOURCE}
+              onInit={initDatabase}
+              useSuspense
+            >
+              <RouteLogger />
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              </Stack>
+            </SQLiteProvider>
+          </Suspense>
+        </ErrorBoundary>
+      </TranslationProvider>
     </ThemeProvider>
   );
 }

@@ -3,19 +3,28 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Verse } from '@/db/models';
+import type { Footnote, Verse } from '@/db/models';
 import { StatusView } from '@/components/StatusView';
 import { saveReadingPosition, useBookmarkedVerses } from '@/features/bookmarks';
+import { useSelectedTranslation } from '@/features/settings';
 import { toError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { DEFAULT_TRANSLATION } from '../api/readingRepository';
 import { useChapter } from '../hooks/useChapter';
+import { useChapterFootnotes } from '../hooks/useChapterFootnotes';
 import { getAdjacentChapter } from '../lib/navigation';
 import { ChapterHeader } from './ChapterHeader';
+import { FootnoteSheet } from './FootnoteSheet';
 import { VerseList } from './VerseList';
+
+interface SelectedFootnoteVerse {
+  verseNumber: number;
+  footnotes: ReadonlyArray<Footnote>;
+}
+
+const EMPTY_FOOTNOTES: ReadonlyArray<Footnote> = [];
 
 function parseRouteNumber(value: string | string[] | undefined): number | null {
   if (typeof value !== 'string') {
@@ -33,12 +42,13 @@ export function ChapterScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ book: string; chapter: string; verse?: string }>();
   const [reloadKey, setReloadKey] = useState(0);
+  const { translationCode } = useSelectedTranslation();
 
   const universalId = parseRouteNumber(params.book);
   const chapter = parseRouteNumber(params.chapter);
   const targetVerse = parseRouteNumber(params.verse);
   const { book, verses, isLoading, error } = useChapter(
-    DEFAULT_TRANSLATION,
+    translationCode,
     universalId ?? 0,
     chapter ?? 0,
     reloadKey,
@@ -53,6 +63,20 @@ export function ChapterScreen() {
     universalId ?? 0,
     chapter ?? 0,
   );
+
+  const {
+    footnotesByVerseId,
+    isLoading: footnotesLoading,
+    error: footnotesError,
+  } = useChapterFootnotes(book?.id ?? null, chapter ?? 0);
+
+  const footnoteVerseIds = useMemo(
+    () => (footnotesByVerseId ? new Set(footnotesByVerseId.keys()) : null),
+    [footnotesByVerseId],
+  );
+
+  const [selectedFootnoteVerse, setSelectedFootnoteVerse] =
+    useState<SelectedFootnoteVerse | null>(null);
 
   useEffect(() => {
     logger.debug('ChapterScreen', 'Route params', { book: params.book, chapter: params.chapter });
@@ -132,6 +156,27 @@ export function ChapterScreen() {
     [toggleVerse, universalId, chapter],
   );
 
+  const handleVersePress = useCallback(
+    (verse: Verse) => {
+      const footnotes = footnotesByVerseId?.get(verse.id);
+      if (!footnotes || footnotes.length === 0) {
+        return;
+      }
+      logger.info('ChapterScreen', 'Footnotes opened for verse', {
+        universalId,
+        chapter,
+        verse: verse.number,
+        footnoteCount: footnotes.length,
+      });
+      setSelectedFootnoteVerse({ verseNumber: verse.number, footnotes });
+    },
+    [footnotesByVerseId, universalId, chapter],
+  );
+
+  const handleFootnoteSheetClose = useCallback(() => {
+    setSelectedFootnoteVerse(null);
+  }, []);
+
   if (universalId === null || chapter === null) {
     return null;
   }
@@ -156,6 +201,8 @@ export function ChapterScreen() {
         header={<ChapterHeader title={book.title} chapter={chapter} />}
         targetVerse={targetVerse}
         bookmarkedVerseNumbers={bookmarkedVerses}
+        footnoteVerseIds={footnoteVerseIds}
+        onVersePress={handleVersePress}
         onVerseLongPress={handleVerseLongPress}
       />
       <View
@@ -179,6 +226,16 @@ export function ChapterScreen() {
           onPress={handleNext}
         />
       </View>
+      <FootnoteSheet
+        visible={selectedFootnoteVerse !== null}
+        chapterTitle={book.title}
+        chapter={chapter}
+        verseNumber={selectedFootnoteVerse?.verseNumber ?? 0}
+        footnotes={selectedFootnoteVerse?.footnotes ?? EMPTY_FOOTNOTES}
+        isLoading={footnotesLoading}
+        error={footnotesError}
+        onClose={handleFootnoteSheetClose}
+      />
     </View>
   );
 }
