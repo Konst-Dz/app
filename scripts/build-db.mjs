@@ -2,10 +2,10 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, readFileSync, renameSync, rmSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { loadSources } from './sources/index.mjs';
-import { validateDatasets } from './validate.mjs';
+import { validateDatasets, validateFootnoteCounts } from './validate.mjs';
 import { DEFAULT_OUTPUT_PATH, SCHEMA_PATH } from './paths.mjs';
 
-const SCHEMA_VERSION = '1';
+const SCHEMA_VERSION = '2';
 const LOG_LEVELS = { debug: 10, info: 20, warn: 30, error: 40 };
 
 function createLogger() {
@@ -31,7 +31,7 @@ export function applySchema(db) {
   db.exec(readFileSync(SCHEMA_PATH, 'utf8'));
 }
 
-function insertTranslation(db, dataset, logger) {
+function insertTranslation(db, dataset, logger, footnotes, consumedKeys) {
   if (!dataset || typeof dataset !== 'object') {
     throw new Error('Translation dataset must be an object');
   }
@@ -51,6 +51,9 @@ function insertTranslation(db, dataset, logger) {
   const insertVerseStmt = db.prepare(
     'INSERT INTO verses (book_id, chapter, number, text) VALUES (?, ?, ?, ?)',
   );
+  const insertFootnoteStmt = db.prepare(
+    'INSERT INTO footnotes (verse_id, marker, text) VALUES (?, ?, ?)',
+  );
 
   db.exec('BEGIN');
   try {
@@ -62,6 +65,7 @@ function insertTranslation(db, dataset, logger) {
     );
     const translationId = Number(translationResult.lastInsertRowid);
     let verseCount = 0;
+    let footnoteCount = 0;
 
     dataset.books.forEach((book, bookIndex) => {
       if (!Array.isArray(book.chapters)) {
@@ -81,8 +85,19 @@ function insertTranslation(db, dataset, logger) {
 
       book.chapters.forEach((chapter) => {
         chapter.verses.forEach((verse) => {
-          insertVerseStmt.run(bookId, chapter.number, verse.number, verse.text);
+          const verseResult = insertVerseStmt.run(bookId, chapter.number, verse.number, verse.text);
           bookVerseCount += 1;
+
+          if (!footnotes) return;
+          const key = `${dataset.code}|${book.universalId}|${chapter.number}|${verse.number}`;
+          const notes = footnotes.byKey.get(key);
+          if (!notes) return;
+          consumedKeys.add(key);
+          const verseId = Number(verseResult.lastInsertRowid);
+          for (const note of notes) {
+            insertFootnoteStmt.run(verseId, note.marker, note.text);
+            footnoteCount += 1;
+          }
         });
       });
 
@@ -96,8 +111,14 @@ function insertTranslation(db, dataset, logger) {
     });
 
     db.exec('COMMIT');
-    logger.info('Translation inserted', { translation: dataset.code, verseCount });
-    return { translationId, code: dataset.code, books: dataset.books.length, verses: verseCount };
+    logger.info('Translation inserted', { translation: dataset.code, verseCount, footnoteCount });
+    return {
+      translationId,
+      code: dataset.code,
+      books: dataset.books.length,
+      verses: verseCount,
+      footnotes: footnoteCount,
+    };
   } catch (error) {
     db.exec('ROLLBACK');
     throw error;
@@ -107,15 +128,23 @@ function insertTranslation(db, dataset, logger) {
 function writeMeta(db, stats) {
   const insertMetaStmt = db.prepare('INSERT INTO meta (key, value) VALUES (?, ?)');
   const totalVerses = stats.reduce((sum, stat) => sum + stat.verses, 0);
+  const totalFootnotes = stats.reduce((sum, stat) => sum + stat.footnotes, 0);
   insertMetaStmt.run('schema_version', SCHEMA_VERSION);
   insertMetaStmt.run('built_at', new Date().toISOString());
   insertMetaStmt.run('translations', String(stats.length));
   insertMetaStmt.run('verses', String(totalVerses));
+  insertMetaStmt.run('footnotes', String(totalFootnotes));
 }
 
 function finalizeDatabase(db, logger) {
   db.exec("INSERT INTO verses_fts(verses_fts) VALUES('rebuild')");
   logger.debug('FTS index rebuilt');
+
+  const foreignKeyViolations = db.prepare('PRAGMA foreign_key_check').all();
+  if (foreignKeyViolations.length > 0) {
+    throw new Error(`Foreign key check failed: ${JSON.stringify(foreignKeyViolations.slice(0, 5))}`);
+  }
+  logger.debug('foreign_key_check passed');
 
   const quickCheck = db.prepare('PRAGMA quick_check').get();
   if (!quickCheck || quickCheck.quick_check !== 'ok') {
@@ -127,7 +156,7 @@ function finalizeDatabase(db, logger) {
   logger.debug('VACUUM done');
 }
 
-export function buildDatabase(datasets, { outputPath = DEFAULT_OUTPUT_PATH, logger = createLogger() } = {}) {
+export function buildDatabase(datasets, { outputPath = DEFAULT_OUTPUT_PATH, logger = createLogger(), footnotes = null } = {}) {
   const tempPath = `${outputPath}.tmp`;
   mkdirSync(dirname(outputPath), { recursive: true });
   rmSync(tempPath, { force: true });
@@ -137,8 +166,17 @@ export function buildDatabase(datasets, { outputPath = DEFAULT_OUTPUT_PATH, logg
     applySchema(db);
     logger.debug('Schema applied', { schemaPath: SCHEMA_PATH });
 
-    const stats = datasets.map((dataset) => insertTranslation(db, dataset, logger));
+    const consumedKeys = new Set();
+    const stats = datasets.map((dataset) => insertTranslation(db, dataset, logger, footnotes, consumedKeys));
     writeMeta(db, stats);
+
+    if (footnotes) {
+      const orphanCount = footnotes.byKey.size - consumedKeys.size;
+      if (orphanCount > 0) {
+        logger.warn('Footnote keys did not match any dataset verse', { orphanCount });
+      }
+    }
+
     finalizeDatabase(db, logger);
     db.close();
 
@@ -149,6 +187,7 @@ export function buildDatabase(datasets, { outputPath = DEFAULT_OUTPUT_PATH, logg
       fileSize,
       translations: stats.length,
       verses: stats.reduce((sum, stat) => sum + stat.verses, 0),
+      footnotes: stats.reduce((sum, stat) => sum + stat.footnotes, 0),
     });
     return { stats, outputPath, fileSize };
   } catch (error) {
@@ -175,9 +214,10 @@ async function main() {
   const outputPath = parseOutputPath(process.argv.slice(2));
   logger.info('Building database', { outputPath });
   try {
-    const datasets = await loadSources(logger);
+    const { datasets, footnotes } = await loadSources(logger);
     validateDatasets(datasets, logger);
-    buildDatabase(datasets, { outputPath, logger });
+    const result = buildDatabase(datasets, { outputPath, logger, footnotes });
+    validateFootnoteCounts(result.stats, footnotes, logger);
   } catch (error) {
     logger.error('Database build failed', { error: error.message });
     process.exitCode = 1;

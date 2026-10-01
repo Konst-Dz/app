@@ -43,6 +43,7 @@ CREATE TABLE footnotes (
 
 CREATE INDEX idx_books_translation_order ON books (translation_id, order_num);
 CREATE INDEX idx_verses_book_chapter ON verses (book_id, chapter);
+CREATE INDEX idx_footnotes_verse ON footnotes (verse_id);
 
 CREATE VIRTUAL TABLE verses_fts USING fts5(
   text,
