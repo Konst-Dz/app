@@ -2,8 +2,18 @@ import { type SQLiteDatabase } from 'expo-sqlite';
 
 import { DEFAULT_TRANSLATION } from '@/db/content';
 import { logger } from '@/lib/logger';
+import {
+  DEFAULT_READING_FONT_STEP_ID,
+  DEFAULT_THEME_MODE,
+  READING_FONT_STEPS,
+  THEME_MODES,
+  type ReadingFontStepId,
+  type ThemeMode,
+} from '@/theme/tokens';
 
 export const TRANSLATION_SETTING_KEY = 'selected_translation';
+export const THEME_MODE_SETTING_KEY = 'theme_mode';
+export const READING_FONT_SIZE_SETTING_KEY = 'reading_font_size';
 
 export const AVAILABLE_TRANSLATIONS = ['rst', 'kjva'] as const;
 
@@ -17,6 +27,16 @@ export function isAvailableTranslation(
   code: string,
 ): code is AvailableTranslation {
   return (AVAILABLE_TRANSLATIONS as readonly string[]).includes(code);
+}
+
+export function isThemeMode(mode: string): mode is ThemeMode {
+  return (THEME_MODES as readonly string[]).includes(mode);
+}
+
+export function isReadingFontStepId(
+  stepId: string,
+): stepId is ReadingFontStepId {
+  return READING_FONT_STEPS.some((step) => step.id === stepId);
 }
 
 export async function getSetting(
@@ -127,5 +147,87 @@ export async function setSelectedTranslationCode(
     'settingsRepository.setSelectedTranslationCode',
     'Translation selected',
     { code },
+  );
+}
+
+export async function getThemeMode(
+  db: SQLiteDatabase,
+): Promise<ThemeMode> {
+  const stored = await getSetting(db, THEME_MODE_SETTING_KEY);
+  if (stored === null) {
+    logger.debug(
+      'settingsRepository.getThemeMode',
+      'No stored theme mode, using default',
+      { themeMode: DEFAULT_THEME_MODE },
+    );
+    return DEFAULT_THEME_MODE;
+  }
+  if (!isThemeMode(stored)) {
+    logger.warn(
+      'settingsRepository.getThemeMode',
+      'Stored theme mode is unknown, using default',
+      { stored, themeMode: DEFAULT_THEME_MODE },
+    );
+    return DEFAULT_THEME_MODE;
+  }
+  return stored;
+}
+
+export async function setThemeMode(
+  db: SQLiteDatabase,
+  mode: string,
+): Promise<void> {
+  if (!isThemeMode(mode)) {
+    logger.warn('settingsRepository.setThemeMode', 'Unknown theme mode', {
+      mode,
+    });
+    throw new Error(`Unknown theme mode: ${mode}`);
+  }
+  await setSetting(db, THEME_MODE_SETTING_KEY, mode);
+  logger.info('settingsRepository.setThemeMode', 'Theme mode selected', {
+    mode,
+  });
+}
+
+export async function getReadingFontStepId(
+  db: SQLiteDatabase,
+): Promise<ReadingFontStepId> {
+  const stored = await getSetting(db, READING_FONT_SIZE_SETTING_KEY);
+  if (stored === null) {
+    logger.debug(
+      'settingsRepository.getReadingFontStepId',
+      'No stored reading font size, using default',
+      { stepId: DEFAULT_READING_FONT_STEP_ID },
+    );
+    return DEFAULT_READING_FONT_STEP_ID;
+  }
+  if (!isReadingFontStepId(stored)) {
+    logger.warn(
+      'settingsRepository.getReadingFontStepId',
+      'Stored reading font size is unknown, using default',
+      { stored, stepId: DEFAULT_READING_FONT_STEP_ID },
+    );
+    return DEFAULT_READING_FONT_STEP_ID;
+  }
+  return stored;
+}
+
+export async function setReadingFontStepId(
+  db: SQLiteDatabase,
+  stepId: string,
+): Promise<void> {
+  if (!isReadingFontStepId(stepId)) {
+    logger.warn(
+      'settingsRepository.setReadingFontStepId',
+      'Unknown reading font size id',
+      { stepId },
+    );
+    throw new Error(`Unknown reading font size id: ${stepId}`);
+  }
+  await setSetting(db, READING_FONT_SIZE_SETTING_KEY, stepId);
+  logger.info(
+    'settingsRepository.setReadingFontStepId',
+    'Reading font size selected',
+    { stepId },
   );
 }

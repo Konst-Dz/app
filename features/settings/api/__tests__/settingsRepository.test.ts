@@ -2,11 +2,19 @@ import { describe, expect, it } from '@jest/globals';
 
 import {
   AVAILABLE_TRANSLATIONS,
+  READING_FONT_SIZE_SETTING_KEY,
+  THEME_MODE_SETTING_KEY,
+  getReadingFontStepId,
   getSelectedTranslationCode,
   getSetting,
+  getThemeMode,
   isAvailableTranslation,
+  isReadingFontStepId,
+  isThemeMode,
+  setReadingFontStepId,
   setSelectedTranslationCode,
   setSetting,
+  setThemeMode,
   TRANSLATION_SETTING_KEY,
 } from '../settingsRepository';
 import { asDb, callsOf, createStubDb } from './stubDb';
@@ -137,6 +145,125 @@ describe('setSelectedTranslationCode', () => {
 
     await expect(setSelectedTranslationCode(asDb(db), 'nrt')).rejects.toThrow(
       /Unknown translation code: nrt/,
+    );
+    expect(db.calls).toHaveLength(0);
+  });
+});
+
+describe('isThemeMode', () => {
+  it('accepts only whitelisted modes', () => {
+    expect(isThemeMode('system')).toBe(true);
+    expect(isThemeMode('light')).toBe(true);
+    expect(isThemeMode('dark')).toBe(true);
+    expect(isThemeMode('black')).toBe(false);
+    expect(isThemeMode('')).toBe(false);
+  });
+});
+
+describe('getThemeMode', () => {
+  it('returns the stored whitelisted mode', async () => {
+    const db = createStubDb({ firstRow: { value: 'dark' } });
+
+    const mode = await getThemeMode(asDb(db));
+
+    expect(mode).toBe('dark');
+    const calls = callsOf(db, 'getFirstAsync');
+    expect(calls[0].params).toEqual([THEME_MODE_SETTING_KEY]);
+  });
+
+  it('falls back to the default mode when nothing is stored', async () => {
+    const db = createStubDb({ firstRow: null });
+
+    const mode = await getThemeMode(asDb(db));
+
+    expect(mode).toBe('system');
+  });
+
+  it('falls back to the default mode for an unknown stored value', async () => {
+    const db = createStubDb({ firstRow: { value: 'black' } });
+
+    const mode = await getThemeMode(asDb(db));
+
+    expect(mode).toBe('system');
+  });
+});
+
+describe('setThemeMode', () => {
+  it('stores a whitelisted mode', async () => {
+    const db = createStubDb();
+
+    await setThemeMode(asDb(db), 'dark');
+
+    const calls = callsOf(db, 'runAsync');
+    expect(calls).toHaveLength(1);
+    expect(calls[0].params).toEqual([THEME_MODE_SETTING_KEY, 'dark']);
+  });
+
+  it('rejects an unknown mode without querying', async () => {
+    const db = createStubDb();
+
+    await expect(setThemeMode(asDb(db), 'black')).rejects.toThrow(
+      /Unknown theme mode: black/,
+    );
+    expect(db.calls).toHaveLength(0);
+  });
+});
+
+describe('isReadingFontStepId', () => {
+  it('accepts only whitelisted step ids', () => {
+    expect(isReadingFontStepId('small')).toBe(true);
+    expect(isReadingFontStepId('medium')).toBe(true);
+    expect(isReadingFontStepId('large')).toBe(true);
+    expect(isReadingFontStepId('xlarge')).toBe(true);
+    expect(isReadingFontStepId('huge')).toBe(false);
+    expect(isReadingFontStepId('')).toBe(false);
+  });
+});
+
+describe('getReadingFontStepId', () => {
+  it('returns the stored whitelisted step id', async () => {
+    const db = createStubDb({ firstRow: { value: 'large' } });
+
+    const stepId = await getReadingFontStepId(asDb(db));
+
+    expect(stepId).toBe('large');
+    const calls = callsOf(db, 'getFirstAsync');
+    expect(calls[0].params).toEqual([READING_FONT_SIZE_SETTING_KEY]);
+  });
+
+  it('falls back to the default step when nothing is stored', async () => {
+    const db = createStubDb({ firstRow: null });
+
+    const stepId = await getReadingFontStepId(asDb(db));
+
+    expect(stepId).toBe('medium');
+  });
+
+  it('falls back to the default step for an unknown stored value', async () => {
+    const db = createStubDb({ firstRow: { value: 'huge' } });
+
+    const stepId = await getReadingFontStepId(asDb(db));
+
+    expect(stepId).toBe('medium');
+  });
+});
+
+describe('setReadingFontStepId', () => {
+  it('stores a whitelisted step id', async () => {
+    const db = createStubDb();
+
+    await setReadingFontStepId(asDb(db), 'xlarge');
+
+    const calls = callsOf(db, 'runAsync');
+    expect(calls).toHaveLength(1);
+    expect(calls[0].params).toEqual([READING_FONT_SIZE_SETTING_KEY, 'xlarge']);
+  });
+
+  it('rejects an unknown step id without querying', async () => {
+    const db = createStubDb();
+
+    await expect(setReadingFontStepId(asDb(db), 'huge')).rejects.toThrow(
+      /Unknown reading font size id: huge/,
     );
     expect(db.calls).toHaveLength(0);
   });
