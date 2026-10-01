@@ -10,6 +10,8 @@ interface VerseRowProps {
   verse: Verse;
   isHighlighted?: boolean;
   isBookmarked?: boolean;
+  hasFootnote?: boolean;
+  onPress?: (verse: Verse) => void;
   onLongPress?: (verse: Verse) => void;
 }
 
@@ -17,16 +19,26 @@ export const VerseRow = memo(function VerseRow({
   verse,
   isHighlighted = false,
   isBookmarked = false,
+  hasFootnote = false,
+  onPress,
   onLongPress,
 }: VerseRowProps) {
   const { palette, fontSizes } = useTheme();
+
+  const handlePress = useCallback(() => {
+    onPress?.(verse);
+  }, [onPress, verse]);
 
   const handleLongPress = useCallback(() => {
     onLongPress?.(verse);
   }, [onLongPress, verse]);
 
   return (
-    <Pressable onLongPress={onLongPress ? handleLongPress : undefined}>
+    <Pressable
+      onPress={onPress ? handlePress : undefined}
+      onLongPress={onLongPress ? handleLongPress : undefined}
+      style={({ pressed }) => (pressed && onPress ? styles.rowPressed : null)}
+    >
       <View
         style={[
           styles.row,
@@ -36,18 +48,34 @@ export const VerseRow = memo(function VerseRow({
       >
         <View style={styles.marker}>
           {isBookmarked ? (
-            <Ionicons name="bookmark" size={fontSizes.sm} color={palette.primary} />
+            <Ionicons
+              name="bookmark"
+              size={fontSizes.sm}
+              color={palette.primary}
+            />
+          ) : null}
+          {!isBookmarked && hasFootnote ? (
+            <Ionicons
+              name="document-text-outline"
+              size={fontSizes.sm}
+              color={palette.primary}
+            />
           ) : null}
           <Text
             style={[
               styles.number,
-              { color: isBookmarked ? palette.primary : palette.textMuted, fontSize: fontSizes.sm },
+              {
+                color: isBookmarked ? palette.primary : palette.textMuted,
+                fontSize: fontSizes.sm,
+              },
             ]}
           >
             {verse.number}
           </Text>
         </View>
-        <Text style={[styles.text, { color: palette.text, fontSize: fontSizes.md }]}>
+        <Text
+          style={[styles.text, { color: palette.text, fontSize: fontSizes.md }]}
+        >
           {verse.text}
         </Text>
       </View>
@@ -76,5 +104,8 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     lineHeight: fontSizes.md * 1.5,
+  },
+  rowPressed: {
+    opacity: 0.7,
   },
 });

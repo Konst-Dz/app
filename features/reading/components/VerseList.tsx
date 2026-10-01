@@ -12,6 +12,8 @@ interface VerseListProps {
   header: React.ReactElement;
   targetVerse?: number | null;
   bookmarkedVerseNumbers?: ReadonlySet<number>;
+  footnoteVerseIds?: ReadonlySet<number> | null;
+  onVersePress?: (verse: Verse) => void;
   onVerseLongPress?: (verse: Verse) => void;
 }
 
@@ -31,6 +33,8 @@ export function VerseList({
   header,
   targetVerse = null,
   bookmarkedVerseNumbers,
+  footnoteVerseIds,
+  onVersePress,
   onVerseLongPress,
 }: VerseListProps) {
   const listRef = useRef<FlatList<Verse> | null>(null);
@@ -62,7 +66,11 @@ export function VerseList({
         animated: false,
       });
       setTimeout(() => {
-        listRef.current?.scrollToIndex({ index: info.index, viewPosition: 0, animated: false });
+        listRef.current?.scrollToIndex({
+          index: info.index,
+          viewPosition: 0,
+          animated: false,
+        });
       }, SCROLL_RETRY_DELAY_MS);
     },
     [],
@@ -74,10 +82,18 @@ export function VerseList({
         verse={item}
         isHighlighted={targetVerse !== null && item.number === targetVerse}
         isBookmarked={bookmarkedVerseNumbers?.has(item.number) ?? false}
+        hasFootnote={footnoteVerseIds?.has(item.id) ?? false}
+        onPress={onVersePress}
         onLongPress={onVerseLongPress}
       />
     ),
-    [targetVerse, bookmarkedVerseNumbers, onVerseLongPress],
+    [
+      targetVerse,
+      bookmarkedVerseNumbers,
+      footnoteVerseIds,
+      onVersePress,
+      onVerseLongPress,
+    ],
   );
 
   return (

@@ -5,6 +5,7 @@ export interface Palette {
   textMuted: string;
   primary: string;
   border: string;
+  overlay: string;
 }
 
 export const palette: { light: Palette; dark: Palette } = {
@@ -15,6 +16,7 @@ export const palette: { light: Palette; dark: Palette } = {
     textMuted: '#8E8E93',
     primary: '#2F6B4F',
     border: '#E5E5EA',
+    overlay: '#000000',
   },
   dark: {
     background: '#000000',
@@ -23,6 +25,7 @@ export const palette: { light: Palette; dark: Palette } = {
     textMuted: '#98989F',
     primary: '#7FB89A',
     border: '#2C2C2E',
+    overlay: '#000000',
   },
 };
 
