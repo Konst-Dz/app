@@ -35,9 +35,9 @@ export const VerseRow = memo(function VerseRow({
 
   return (
     <Pressable
-      onPress={onPress ? handlePress : undefined}
+      onPress={onPress && hasFootnote ? handlePress : undefined}
       onLongPress={onLongPress ? handleLongPress : undefined}
-      style={({ pressed }) => (pressed && onPress ? styles.rowPressed : null)}
+      style={({ pressed }) => (pressed && onPress && hasFootnote ? styles.rowPressed : null)}
     >
       <View
         style={[
