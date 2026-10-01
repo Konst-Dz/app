@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { toError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
@@ -16,11 +16,16 @@ interface RecentHistoryState {
   error: Error | null;
 }
 
-export function useRecentHistory(limit: number = DEFAULT_HISTORY_LIMIT): RecentHistoryState {
+export interface RecentHistoryResult extends RecentHistoryState {
+  refresh: () => void;
+}
+
+export function useRecentHistory(limit: number = DEFAULT_HISTORY_LIMIT): RecentHistoryResult {
   const { database, isLoading: isDatabaseLoading, error: databaseError } = useUserDataDatabase();
   const [positions, setPositions] = useState<ReadingPosition[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!database) {
@@ -57,11 +62,17 @@ export function useRecentHistory(limit: number = DEFAULT_HISTORY_LIMIT): RecentH
     return () => {
       cancelled = true;
     };
-  }, [database, limit]);
+  }, [database, limit, reloadKey]);
+
+  const refresh = useCallback(() => {
+    logger.debug('useRecentHistory', 'Refreshing recent history');
+    setReloadKey((key) => key + 1);
+  }, []);
 
   return {
     positions,
     isLoading: isLoading || isDatabaseLoading,
     error: databaseError ?? error,
+    refresh,
   };
 }

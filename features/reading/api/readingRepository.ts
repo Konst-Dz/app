@@ -10,7 +10,7 @@ import {
 } from '@/db/models';
 import { logger } from '@/lib/logger';
 
-export const DEFAULT_TRANSLATION = 'rst';
+export { DEFAULT_TRANSLATION } from '@/db/content';
 
 export async function getBooks(
   db: SQLiteDatabase,

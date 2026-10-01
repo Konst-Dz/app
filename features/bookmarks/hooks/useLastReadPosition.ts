@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { toError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
@@ -12,11 +12,16 @@ interface LastReadPositionState {
   error: Error | null;
 }
 
-export function useLastReadPosition(): LastReadPositionState {
+export interface LastReadPositionResult extends LastReadPositionState {
+  refresh: () => void;
+}
+
+export function useLastReadPosition(): LastReadPositionResult {
   const { database, isLoading: isDatabaseLoading, error: databaseError } = useUserDataDatabase();
   const [position, setPosition] = useState<ReadingPosition | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!database) {
@@ -55,11 +60,17 @@ export function useLastReadPosition(): LastReadPositionState {
     return () => {
       cancelled = true;
     };
-  }, [database]);
+  }, [database, reloadKey]);
+
+  const refresh = useCallback(() => {
+    logger.debug('useLastReadPosition', 'Refreshing last read position');
+    setReloadKey((key) => key + 1);
+  }, []);
 
   return {
     position,
     isLoading: isLoading || isDatabaseLoading,
     error: databaseError ?? error,
+    refresh,
   };
 }

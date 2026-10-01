@@ -61,7 +61,17 @@ A failing validation aborts the build with a non-zero exit code.
 - `translations`, `books` (with `universal_id` for cross-translation identity), `verses`, `footnotes`, `meta`;
 - `verses_fts` — FTS5 external-content index over `verses.text`, tokenizer `unicode61 remove_diacritics 2`.
 
-The content database is immutable at runtime: no migrations, user data (bookmarks, history) will live in a separate writable database. Rebuild the asset instead of migrating it.
+The content database is immutable at runtime: no migrations. Rebuild the asset instead of migrating it.
+
+## User data database
+
+Bookmarks and reading history live in a separate writable database, `user-data.db`, opened via `openDatabaseAsync` (see `db/userData.ts`). It is created on demand on the app filesystem and never ships as an asset, so content asset rebuilds can never overwrite or corrupt user data.
+
+- **Schema owner:** `db/userDataSchema.ts` — idempotent migrations applied sequentially and tracked with `PRAGMA user_version` (each migration runs inside a transaction).
+- **Tables (v1):** `bookmarks` (unique per `book_universal_id + chapter + verse_number`), `reading_history` (unique per `book_universal_id + chapter`, upserted on every chapter open).
+- **Stable keys:** verses are referenced by `(book_universal_id, chapter, verse_number)`, not by `verses.id` — the id is regenerated on every content asset rebuild. No foreign keys cross the two databases.
+- **Repositories:** `features/bookmarks/api/` owns all SQL against `user-data.db`; `features/reading` consumes it only through the bookmarks public API.
+- **Tests:** `db/__tests__/userData.test.js` runs the migration sequence against a real SQLite database (via `node:sqlite`).
 
 ## Refreshing data
 

@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import {
   RefreshControl,
@@ -9,6 +9,7 @@ import {
 
 import type { Book } from '@/db/models';
 import { StatusView } from '@/components/StatusView';
+import { useLastReadPosition } from '@/features/bookmarks';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
@@ -17,11 +18,27 @@ import { DEFAULT_TRANSLATION } from '../api/readingRepository';
 import { useBooks } from '../hooks/useBooks';
 import { groupBooksByTestament } from '../lib/books';
 import { BookRow } from './BookRow';
+import { ContinueReadingBanner } from './ContinueReadingBanner';
 
 export function ReadingScreen() {
   const { palette, fontSizes } = useTheme();
   const [reloadKey, setReloadKey] = useState(0);
   const { books, isLoading, error } = useBooks(DEFAULT_TRANSLATION, reloadKey);
+  const { position: lastReadPosition, refresh: refreshLastReadPosition } = useLastReadPosition();
+
+  useFocusEffect(
+    useCallback(() => {
+      logger.debug('ReadingScreen', 'Screen focused, refreshing last read position');
+      refreshLastReadPosition();
+    }, [refreshLastReadPosition]),
+  );
+
+  const lastReadBook = useMemo(() => {
+    if (!books || !lastReadPosition) {
+      return null;
+    }
+    return books.find((book) => book.universalId === lastReadPosition.bookUniversalId) ?? null;
+  }, [books, lastReadPosition]);
 
   const sections = useMemo(
     () => (books ? groupBooksByTestament(books) : []),
@@ -38,6 +55,23 @@ export function ReadingScreen() {
       params: { book: String(book.universalId), chapter: '1' },
     });
   }, []);
+
+  const handleContinuePress = useCallback(() => {
+    if (!lastReadPosition) {
+      return;
+    }
+    logger.info('ReadingScreen', 'Continue reading pressed', {
+      universalId: lastReadPosition.bookUniversalId,
+      chapter: lastReadPosition.chapter,
+    });
+    router.push({
+      pathname: '/chapter/[book]/[chapter]',
+      params: {
+        book: String(lastReadPosition.bookUniversalId),
+        chapter: String(lastReadPosition.chapter),
+      },
+    });
+  }, [lastReadPosition]);
 
   const handleRetry = useCallback(() => {
     logger.debug('ReadingScreen', 'Retry books load');
@@ -76,6 +110,15 @@ export function ReadingScreen() {
           {section.title}
         </Text>
       )}
+      ListHeaderComponent={
+        lastReadPosition && lastReadBook ? (
+          <ContinueReadingBanner
+            book={lastReadBook}
+            chapter={lastReadPosition.chapter}
+            onPress={handleContinuePress}
+          />
+        ) : null
+      }
       contentContainerStyle={styles.content}
       stickySectionHeadersEnabled
       refreshing={isLoading}
