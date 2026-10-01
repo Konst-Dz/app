@@ -28,11 +28,12 @@ function parseRouteNumber(value: string | string[] | undefined): number | null {
 export function ChapterScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ book: string; chapter: string }>();
+  const params = useLocalSearchParams<{ book: string; chapter: string; verse?: string }>();
   const [reloadKey, setReloadKey] = useState(0);
 
   const universalId = parseRouteNumber(params.book);
   const chapter = parseRouteNumber(params.chapter);
+  const targetVerse = parseRouteNumber(params.verse);
   const { book, verses, isLoading, error } = useChapter(
     DEFAULT_TRANSLATION,
     universalId ?? 0,
@@ -113,6 +114,7 @@ export function ChapterScreen() {
       <VerseList
         verses={verses ?? []}
         header={<ChapterHeader title={book.title} chapter={chapter} />}
+        targetVerse={targetVerse}
       />
       <View
         style={[
