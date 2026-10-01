@@ -1,4 +1,4 @@
-export const USER_DATA_SCHEMA_VERSION = 1;
+export const USER_DATA_SCHEMA_VERSION = 2;
 
 export interface UserSchemaConnection {
   execAsync(sql: string): Promise<void>;
@@ -23,6 +23,12 @@ export const USER_DATA_MIGRATIONS: readonly string[] = [
       chapter INTEGER NOT NULL,
       opened_at INTEGER NOT NULL,
       UNIQUE (book_universal_id, chapter)
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
     );
   `,
 ];

@@ -15,11 +15,15 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { StatusView } from '@/components/StatusView';
+import { useSelectedTranslation } from '@/features/settings';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { DEFAULT_SEARCH_LIMIT, type SearchResultItem } from '../api/searchRepository';
+import {
+  DEFAULT_SEARCH_LIMIT,
+  type SearchResultItem,
+} from '../api/searchRepository';
 import { useSearch } from '../hooks/useSearch';
 import { SearchResultRow } from './SearchResultRow';
 
@@ -32,7 +36,12 @@ export function SearchScreen() {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
-  const { results, isLoading, error } = useSearch(query, undefined, reloadKey);
+  const { translationCode } = useSelectedTranslation();
+  const { results, isLoading, error } = useSearch(
+    query,
+    translationCode,
+    reloadKey,
+  );
 
   const handleQueryChange = useCallback((value: string) => {
     setQuery(value);
@@ -73,7 +82,9 @@ export function SearchScreen() {
 
   const renderContent = () => {
     if (error !== null) {
-      return <StatusView label="Не удалось выполнить поиск" onRetry={handleRetry} />;
+      return (
+        <StatusView label="Не удалось выполнить поиск" onRetry={handleRetry} />
+      );
     }
     if (isLoading) {
       return <StatusView label="Поиск…" withSpinner />;
@@ -119,7 +130,10 @@ export function SearchScreen() {
       >
         <Ionicons name="search" size={fontSizes.lg} color={palette.textMuted} />
         <TextInput
-          style={[styles.input, { color: palette.text, fontSize: fontSizes.md }]}
+          style={[
+            styles.input,
+            { color: palette.text, fontSize: fontSizes.md },
+          ]}
           placeholder="Поиск по стихам"
           placeholderTextColor={palette.textMuted}
           value={query}
@@ -130,11 +144,20 @@ export function SearchScreen() {
         />
         {query !== '' ? (
           <Pressable onPress={handleClear} hitSlop={spacing.s}>
-            <Ionicons name="close-circle" size={fontSizes.lg} color={palette.textMuted} />
+            <Ionicons
+              name="close-circle"
+              size={fontSizes.lg}
+              color={palette.textMuted}
+            />
           </Pressable>
         ) : null}
       </View>
-      <View style={[styles.content, { paddingBottom: Math.max(insets.bottom, spacing.m) }]}>
+      <View
+        style={[
+          styles.content,
+          { paddingBottom: Math.max(insets.bottom, spacing.m) },
+        ]}
+      >
         {renderContent()}
       </View>
     </KeyboardAvoidingView>
@@ -145,7 +168,12 @@ function ResultsLimitFooter() {
   const { palette, fontSizes } = useTheme();
 
   return (
-    <Text style={[styles.limitFooter, { color: palette.textMuted, fontSize: fontSizes.sm }]}>
+    <Text
+      style={[
+        styles.limitFooter,
+        { color: palette.textMuted, fontSize: fontSizes.sm },
+      ]}
+    >
       {`Показаны первые ${DEFAULT_SEARCH_LIMIT} результатов`}
     </Text>
   );

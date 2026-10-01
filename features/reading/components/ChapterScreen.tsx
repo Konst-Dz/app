@@ -6,12 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Footnote, Verse } from '@/db/models';
 import { StatusView } from '@/components/StatusView';
 import { saveReadingPosition, useBookmarkedVerses } from '@/features/bookmarks';
+import { useSelectedTranslation } from '@/features/settings';
 import { toError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { DEFAULT_TRANSLATION } from '../api/readingRepository';
 import { useChapter } from '../hooks/useChapter';
 import { useChapterFootnotes } from '../hooks/useChapterFootnotes';
 import { getAdjacentChapter } from '../lib/navigation';
@@ -42,12 +42,13 @@ export function ChapterScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ book: string; chapter: string; verse?: string }>();
   const [reloadKey, setReloadKey] = useState(0);
+  const { translationCode } = useSelectedTranslation();
 
   const universalId = parseRouteNumber(params.book);
   const chapter = parseRouteNumber(params.chapter);
   const targetVerse = parseRouteNumber(params.verse);
   const { book, verses, isLoading, error } = useChapter(
-    DEFAULT_TRANSLATION,
+    translationCode,
     universalId ?? 0,
     chapter ?? 0,
     reloadKey,

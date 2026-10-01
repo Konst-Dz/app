@@ -1,7 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 
-import { DEFAULT_TRANSLATION } from '@/db/content';
+import { useSelectedTranslation } from '@/features/settings';
 import { logger } from '@/lib/logger';
 
 import type { Bookmark } from '../api/bookmarksRepository';
@@ -34,7 +34,11 @@ export function useBookmarkItems(
   bookmarks: Bookmark[] | null,
   enabled: boolean,
 ): BookmarkItemsState {
-  const [state, setState] = useState<BookmarkItemsState>({ items: [], isReady: false });
+  const { translationCode } = useSelectedTranslation();
+  const [state, setState] = useState<BookmarkItemsState>({
+    items: [],
+    isReady: false,
+  });
 
   useEffect(() => {
     if (!enabled || !db || !bookmarks) {
@@ -47,13 +51,15 @@ export function useBookmarkItems(
     }
 
     let cancelled = false;
-    logger.debug('useBookmarkItems', 'Enriching bookmarks', { count: bookmarks.length });
+    logger.debug('useBookmarkItems', 'Enriching bookmarks', {
+      count: bookmarks.length,
+    });
 
     const lookups = bookmarks.map(async (bookmark): Promise<BookmarkItem> => {
       try {
         const reference = await getVerseReference(
           db,
-          DEFAULT_TRANSLATION,
+          translationCode,
           bookmark.bookUniversalId,
           bookmark.chapter,
           bookmark.verseNumber,
@@ -92,13 +98,15 @@ export function useBookmarkItems(
         return;
       }
       setState({ items, isReady: true });
-      logger.debug('useBookmarkItems', 'Bookmarks enriched', { count: items.length });
+      logger.debug('useBookmarkItems', 'Bookmarks enriched', {
+        count: items.length,
+      });
     });
 
     return () => {
       cancelled = true;
     };
-  }, [db, bookmarks, enabled]);
+  }, [db, bookmarks, enabled, translationCode]);
 
   return state;
 }

@@ -47,9 +47,7 @@ describe('buildMatchExpression', () => {
   });
 
   it('deduplicates tokens preserving the first occurrence', () => {
-    expect(buildMatchExpression('мир мир мир любовь')).toBe(
-      '"мир"* "любовь"*',
-    );
+    expect(buildMatchExpression('мир мир мир любовь')).toBe('"мир"* "любовь"*');
   });
 
   it('accepts numbers as tokens', () => {

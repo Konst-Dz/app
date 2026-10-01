@@ -1,7 +1,11 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { HIGHLIGHT_END, HIGHLIGHT_START } from '../../lib/query';
-import { MAX_SEARCH_LIMIT, searchVerses, type SearchResultItem } from '../searchRepository';
+import {
+  MAX_SEARCH_LIMIT,
+  searchVerses,
+  type SearchResultItem,
+} from '../searchRepository';
 
 interface CapturedCall {
   sql: string;
@@ -15,7 +19,10 @@ interface StubDb {
   failure: Error | null;
 }
 
-function createStubDb(rows: unknown[] = [], failure: Error | null = null): StubDb {
+function createStubDb(
+  rows: unknown[] = [],
+  failure: Error | null = null,
+): StubDb {
   const stub: StubDb = {
     calls: [],
     rows,
@@ -66,7 +73,11 @@ describe('searchVerses', () => {
 
   it('maps snake_case rows to camelCase result items', async () => {
     const db = createStubDb(SAMPLE_ROWS);
-    const results: SearchResultItem[] = await searchVerses(db as never, 'rst', '"господь"*');
+    const results: SearchResultItem[] = await searchVerses(
+      db as never,
+      'rst',
+      '"господь"*',
+    );
     expect(results).toEqual([
       {
         verseId: 42,
@@ -113,8 +124,8 @@ describe('searchVerses', () => {
 
   it('rethrows database errors', async () => {
     const db = createStubDb([], new Error('database is locked'));
-    await expect(
-      searchVerses(db as never, 'rst', '"мир"*'),
-    ).rejects.toThrow('database is locked');
+    await expect(searchVerses(db as never, 'rst', '"мир"*')).rejects.toThrow(
+      'database is locked',
+    );
   });
 });

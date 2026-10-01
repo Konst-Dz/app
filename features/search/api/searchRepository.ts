@@ -74,9 +74,13 @@ export async function searchVerses(
   offset = 0,
 ): Promise<SearchResultItem[]> {
   if (matchExpression === null || matchExpression.trim() === '') {
-    logger.debug('searchRepository.searchVerses', 'Empty match expression, search skipped', {
-      translationCode,
-    });
+    logger.debug(
+      'searchRepository.searchVerses',
+      'Empty match expression, search skipped',
+      {
+        translationCode,
+      },
+    );
     return [];
   }
   if (translationCode.trim() === '') {

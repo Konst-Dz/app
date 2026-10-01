@@ -10,16 +10,24 @@ interface SnippetTextProps {
   snippet: string;
 }
 
-export const SnippetText = memo(function SnippetText({ snippet }: SnippetTextProps) {
+export const SnippetText = memo(function SnippetText({
+  snippet,
+}: SnippetTextProps) {
   const { palette } = useTheme();
   const segments = splitSnippet(snippet);
 
   return (
-    <Text style={[styles.text, { color: palette.text, fontSize: fontSizes.md }]}>
+    <Text
+      style={[styles.text, { color: palette.text, fontSize: fontSizes.md }]}
+    >
       {segments.map((segment, index) => (
         <Text
           key={index}
-          style={segment.isHighlighted ? { color: palette.primary, fontWeight: '600' } : null}
+          style={
+            segment.isHighlighted
+              ? { color: palette.primary, fontWeight: '600' }
+              : null
+          }
         >
           {segment.text}
         </Text>

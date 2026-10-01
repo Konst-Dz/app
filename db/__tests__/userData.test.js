@@ -3,7 +3,11 @@ const os = require('node:os');
 const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
 
-const { USER_DATA_SCHEMA_VERSION, applyUserMigrations } = require('@/db/userDataSchema');
+const {
+  USER_DATA_MIGRATIONS,
+  USER_DATA_SCHEMA_VERSION,
+  applyUserMigrations,
+} = require('@/db/userDataSchema');
 
 function createConnection(db) {
   return {
@@ -49,6 +53,34 @@ describe('applyUserMigrations', () => {
     const tables = listTableNames(db);
     expect(tables).toContain('bookmarks');
     expect(tables).toContain('reading_history');
+  });
+
+  it('creates the settings table with a primary key', async () => {
+    await applyUserMigrations(createConnection(db));
+
+    const tables = listTableNames(db);
+    expect(tables).toContain('settings');
+
+    const insert = () =>
+      db.prepare("INSERT INTO settings (key, value) VALUES ('selected_translation', 'rst')").run();
+    insert();
+    expect(insert).toThrow(/UNIQUE constraint failed/);
+  });
+
+  it('upgrades a version 1 database to version 2 and keeps existing rows', async () => {
+    db.exec(USER_DATA_MIGRATIONS[0]);
+    db.exec('PRAGMA user_version = 1');
+    db.prepare(
+      'INSERT INTO bookmarks (book_universal_id, chapter, verse_number, created_at) VALUES (3, 4, 9, 200)',
+    ).run();
+
+    const applied = await applyUserMigrations(createConnection(db));
+
+    expect(applied).toBe(2);
+    expect(readSchemaVersion(db)).toBe(2);
+    expect(listTableNames(db)).toContain('settings');
+    const bookmarks = db.prepare('SELECT book_universal_id, chapter, verse_number FROM bookmarks').all();
+    expect(bookmarks).toEqual([{ book_universal_id: 3, chapter: 4, verse_number: 9 }]);
   });
 
   it('is idempotent on repeated runs and keeps existing rows', async () => {

@@ -10,11 +10,11 @@ import {
 import type { Book } from '@/db/models';
 import { StatusView } from '@/components/StatusView';
 import { useLastReadPosition } from '@/features/bookmarks';
+import { useSelectedTranslation } from '@/features/settings';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { DEFAULT_TRANSLATION } from '../api/readingRepository';
 import { useBooks } from '../hooks/useBooks';
 import { groupBooksByTestament } from '../lib/books';
 import { BookRow } from './BookRow';
@@ -23,7 +23,8 @@ import { ContinueReadingBanner } from './ContinueReadingBanner';
 export function ReadingScreen() {
   const { palette, fontSizes } = useTheme();
   const [reloadKey, setReloadKey] = useState(0);
-  const { books, isLoading, error } = useBooks(DEFAULT_TRANSLATION, reloadKey);
+  const { translationCode } = useSelectedTranslation();
+  const { books, isLoading, error } = useBooks(translationCode, reloadKey);
   const { position: lastReadPosition, refresh: refreshLastReadPosition } = useLastReadPosition();
 
   useFocusEffect(

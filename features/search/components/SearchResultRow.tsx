@@ -30,7 +30,12 @@ export const SearchResultRow = memo(function SearchResultRow({
         pressed ? { backgroundColor: palette.surface } : null,
       ]}
     >
-      <Text style={[styles.reference, { color: palette.textMuted, fontSize: fontSizes.sm }]}>
+      <Text
+        style={[
+          styles.reference,
+          { color: palette.textMuted, fontSize: fontSizes.sm },
+        ]}
+      >
         {`${item.bookShortTitle} ${item.chapter}:${item.verseNumber}`}
       </Text>
       <SnippetText snippet={item.snippet} />

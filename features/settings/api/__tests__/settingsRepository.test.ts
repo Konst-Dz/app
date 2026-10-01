@@ -1,0 +1,143 @@
+import { describe, expect, it } from '@jest/globals';
+
+import {
+  AVAILABLE_TRANSLATIONS,
+  getSelectedTranslationCode,
+  getSetting,
+  isAvailableTranslation,
+  setSelectedTranslationCode,
+  setSetting,
+  TRANSLATION_SETTING_KEY,
+} from '../settingsRepository';
+import { asDb, callsOf, createStubDb } from './stubDb';
+
+describe('getSetting', () => {
+  it('returns the stored value', async () => {
+    const db = createStubDb({ firstRow: { value: 'kjva' } });
+
+    const value = await getSetting(asDb(db), TRANSLATION_SETTING_KEY);
+
+    expect(value).toBe('kjva');
+    const calls = callsOf(db, 'getFirstAsync');
+    expect(calls).toHaveLength(1);
+    expect(calls[0].sql).toContain('FROM settings');
+    expect(calls[0].params).toEqual([TRANSLATION_SETTING_KEY]);
+  });
+
+  it('returns null when the key is missing', async () => {
+    const db = createStubDb({ firstRow: null });
+
+    const value = await getSetting(asDb(db), TRANSLATION_SETTING_KEY);
+
+    expect(value).toBeNull();
+  });
+
+  it('returns null for an empty key without querying', async () => {
+    const db = createStubDb();
+
+    const value = await getSetting(asDb(db), '  ');
+
+    expect(value).toBeNull();
+    expect(db.calls).toHaveLength(0);
+  });
+
+  it('rethrows database errors', async () => {
+    const db = createStubDb({ failure: new Error('database is locked') });
+
+    await expect(getSetting(asDb(db), TRANSLATION_SETTING_KEY)).rejects.toThrow(
+      'database is locked',
+    );
+  });
+});
+
+describe('setSetting', () => {
+  it('upserts the value with the conflict clause', async () => {
+    const db = createStubDb();
+
+    await setSetting(asDb(db), TRANSLATION_SETTING_KEY, 'kjva');
+
+    const calls = callsOf(db, 'runAsync');
+    expect(calls).toHaveLength(1);
+    expect(calls[0].sql).toContain(
+      'ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+    );
+    expect(calls[0].params).toEqual([TRANSLATION_SETTING_KEY, 'kjva']);
+  });
+
+  it('rejects an empty key or value without querying', async () => {
+    const db = createStubDb();
+
+    await expect(setSetting(asDb(db), '  ', 'kjva')).rejects.toThrow(
+      /Invalid setting/,
+    );
+    await expect(
+      setSetting(asDb(db), TRANSLATION_SETTING_KEY, ''),
+    ).rejects.toThrow(/Invalid setting/);
+    expect(db.calls).toHaveLength(0);
+  });
+
+  it('rethrows database errors', async () => {
+    const db = createStubDb({ failure: new Error('database is locked') });
+
+    await expect(
+      setSetting(asDb(db), TRANSLATION_SETTING_KEY, 'rst'),
+    ).rejects.toThrow('database is locked');
+  });
+});
+
+describe('isAvailableTranslation', () => {
+  it('accepts only whitelisted codes', () => {
+    expect(AVAILABLE_TRANSLATIONS).toEqual(['rst', 'kjva']);
+    expect(isAvailableTranslation('rst')).toBe(true);
+    expect(isAvailableTranslation('kjva')).toBe(true);
+    expect(isAvailableTranslation('nrt')).toBe(false);
+    expect(isAvailableTranslation('')).toBe(false);
+  });
+});
+
+describe('getSelectedTranslationCode', () => {
+  it('returns the stored whitelisted code', async () => {
+    const db = createStubDb({ firstRow: { value: 'kjva' } });
+
+    const code = await getSelectedTranslationCode(asDb(db));
+
+    expect(code).toBe('kjva');
+  });
+
+  it('falls back to the default translation when nothing is stored', async () => {
+    const db = createStubDb({ firstRow: null });
+
+    const code = await getSelectedTranslationCode(asDb(db));
+
+    expect(code).toBe('rst');
+  });
+
+  it('falls back to the default translation for an unknown stored code', async () => {
+    const db = createStubDb({ firstRow: { value: 'nrt' } });
+
+    const code = await getSelectedTranslationCode(asDb(db));
+
+    expect(code).toBe('rst');
+  });
+});
+
+describe('setSelectedTranslationCode', () => {
+  it('stores a whitelisted code', async () => {
+    const db = createStubDb();
+
+    await setSelectedTranslationCode(asDb(db), 'kjva');
+
+    const calls = callsOf(db, 'runAsync');
+    expect(calls).toHaveLength(1);
+    expect(calls[0].params).toEqual([TRANSLATION_SETTING_KEY, 'kjva']);
+  });
+
+  it('rejects an unknown code without querying', async () => {
+    const db = createStubDb();
+
+    await expect(setSelectedTranslationCode(asDb(db), 'nrt')).rejects.toThrow(
+      /Unknown translation code: nrt/,
+    );
+    expect(db.calls).toHaveLength(0);
+  });
+});
