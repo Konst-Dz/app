@@ -11,6 +11,8 @@ interface VerseListProps {
   verses: Verse[];
   header: React.ReactElement;
   targetVerse?: number | null;
+  bookmarkedVerseNumbers?: ReadonlySet<number>;
+  onVerseLongPress?: (verse: Verse) => void;
 }
 
 interface ScrollToIndexFailedInfo {
@@ -24,7 +26,13 @@ const MAX_TO_RENDER_PER_BATCH = 25;
 const WINDOW_SIZE = 7;
 const SCROLL_RETRY_DELAY_MS = 100;
 
-export function VerseList({ verses, header, targetVerse = null }: VerseListProps) {
+export function VerseList({
+  verses,
+  header,
+  targetVerse = null,
+  bookmarkedVerseNumbers,
+  onVerseLongPress,
+}: VerseListProps) {
   const listRef = useRef<FlatList<Verse> | null>(null);
 
   useEffect(() => {
@@ -62,9 +70,14 @@ export function VerseList({ verses, header, targetVerse = null }: VerseListProps
 
   const renderVerse = useCallback(
     ({ item }: { item: Verse }) => (
-      <VerseRow verse={item} isHighlighted={targetVerse !== null && item.number === targetVerse} />
+      <VerseRow
+        verse={item}
+        isHighlighted={targetVerse !== null && item.number === targetVerse}
+        isBookmarked={bookmarkedVerseNumbers?.has(item.number) ?? false}
+        onLongPress={onVerseLongPress}
+      />
     ),
-    [targetVerse],
+    [targetVerse, bookmarkedVerseNumbers, onVerseLongPress],
   );
 
   return (

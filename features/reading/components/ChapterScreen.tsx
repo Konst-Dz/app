@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import type { Verse } from '@/db/models';
 import { StatusView } from '@/components/StatusView';
+import { saveReadingPosition, useBookmarkedVerses } from '@/features/bookmarks';
+import { toError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
@@ -46,6 +49,11 @@ export function ChapterScreen() {
     [chapter, book?.chapterCount],
   );
 
+  const { verseNumbers: bookmarkedVerses, toggleVerse } = useBookmarkedVerses(
+    universalId ?? 0,
+    chapter ?? 0,
+  );
+
   useEffect(() => {
     logger.debug('ChapterScreen', 'Route params', { book: params.book, chapter: params.chapter });
     if (universalId === null || chapter === null) {
@@ -56,6 +64,23 @@ export function ChapterScreen() {
       router.replace('/(tabs)');
     }
   }, [universalId, chapter, params.book, params.chapter]);
+
+  useEffect(() => {
+    if (universalId === null || chapter === null || !book || verses === null) {
+      return;
+    }
+    logger.debug('ChapterScreen', 'Recording reading position', {
+      universalId,
+      chapter,
+    });
+    saveReadingPosition(universalId, chapter).catch((cause: unknown) => {
+      logger.warn('ChapterScreen', 'Failed to record reading position', {
+        universalId,
+        chapter,
+        message: toError(cause).message,
+      });
+    });
+  }, [universalId, chapter, book, verses]);
 
   const goToChapter = useCallback(
     (target: number) => {
@@ -92,6 +117,21 @@ export function ChapterScreen() {
     setReloadKey((key) => key + 1);
   }, []);
 
+  const handleVerseLongPress = useCallback(
+    (verse: Verse) => {
+      if (universalId === null || chapter === null) {
+        return;
+      }
+      logger.info('ChapterScreen', 'Bookmark toggle requested from verse', {
+        universalId,
+        chapter,
+        verse: verse.number,
+      });
+      void toggleVerse(verse.number);
+    },
+    [toggleVerse, universalId, chapter],
+  );
+
   if (universalId === null || chapter === null) {
     return null;
   }
@@ -115,6 +155,8 @@ export function ChapterScreen() {
         verses={verses ?? []}
         header={<ChapterHeader title={book.title} chapter={chapter} />}
         targetVerse={targetVerse}
+        bookmarkedVerseNumbers={bookmarkedVerses}
+        onVerseLongPress={handleVerseLongPress}
       />
       <View
         style={[
