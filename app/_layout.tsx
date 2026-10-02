@@ -1,5 +1,6 @@
 import { SQLiteProvider } from 'expo-sqlite';
 import { Stack, usePathname } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { Suspense, useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
@@ -9,13 +10,28 @@ import {
   DATABASE_NAME,
   initDatabase,
 } from '@/db/database';
-import { TranslationProvider } from '@/features/settings';
+import {
+  AppearanceProvider,
+  TranslationProvider,
+  useAppearance,
+} from '@/features/settings';
 import { logger } from '@/lib/logger';
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext';
 
 export default function RootLayout() {
   return (
-    <ThemeProvider>
+    <AppearanceProvider>
+      <ThemedRoot />
+    </AppearanceProvider>
+  );
+}
+
+function ThemedRoot() {
+  const { themeMode, readingFontStepId } = useAppearance();
+
+  return (
+    <ThemeProvider mode={themeMode} readingFontStepId={readingFontStepId}>
+      <AppStatusBar />
       <TranslationProvider>
         <ErrorBoundary>
           <Suspense fallback={<DatabaseFallback />}>
@@ -35,6 +51,12 @@ export default function RootLayout() {
       </TranslationProvider>
     </ThemeProvider>
   );
+}
+
+function AppStatusBar() {
+  const { colorScheme } = useTheme();
+
+  return <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />;
 }
 
 function RouteLogger() {
