@@ -21,10 +21,10 @@ import { VerseList } from './VerseList';
 
 interface SelectedFootnoteVerse {
   verseNumber: number;
-  footnotes: ReadonlyArray<Footnote>;
+  footnotes: readonly Footnote[];
 }
 
-const EMPTY_FOOTNOTES: ReadonlyArray<Footnote> = [];
+const EMPTY_FOOTNOTES: readonly Footnote[] = [];
 
 function parseRouteNumber(value: string | string[] | undefined): number | null {
   if (typeof value !== 'string') {

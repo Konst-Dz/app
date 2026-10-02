@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Footnote } from '@/db/models';
 import { logger } from '@/lib/logger';
-import { fontSizes, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
 interface FootnoteSheetProps {
@@ -21,7 +21,7 @@ interface FootnoteSheetProps {
   chapterTitle: string;
   chapter: number;
   verseNumber: number;
-  footnotes: ReadonlyArray<Footnote>;
+  footnotes: readonly Footnote[];
   isLoading: boolean;
   error: Error | null;
   onClose: () => void;

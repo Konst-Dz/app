@@ -42,7 +42,7 @@ const READING_FONT_LABELS: Record<ReadingFontStepId, string> = {
 };
 
 export function SettingsScreen() {
-  const { palette, fontSizes, readingFontSize, readingLineHeight } = useTheme();
+  const { palette, readingFontSize, readingLineHeight } = useTheme();
   const insets = useSafeAreaInsets();
   const { translationCode, setTranslationCode } = useSelectedTranslation();
   const {

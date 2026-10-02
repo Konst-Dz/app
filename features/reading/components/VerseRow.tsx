@@ -3,7 +3,7 @@ import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Verse } from '@/db/models';
-import { fontSizes, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
 interface VerseRowProps {
