@@ -1,16 +1,31 @@
 module.exports = {
-  testEnvironment: 'node',
-  testMatch: [
-    '<rootDir>/scripts/**/*.test.js',
-    '<rootDir>/features/**/*.test.ts',
-    '<rootDir>/db/**/*.test.js',
-    '<rootDir>/theme/**/*.test.ts',
+  projects: [
+    {
+      displayName: 'node',
+      testEnvironment: 'node',
+      testMatch: [
+        '<rootDir>/scripts/**/*.test.js',
+        '<rootDir>/db/**/*.test.js',
+      ],
+      transform: {
+        '^.+\\.mjs$': 'babel-jest',
+        '^.+\\.(ts|tsx)$': 'babel-jest',
+      },
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/$1',
+      },
+    },
+    {
+      displayName: 'rn',
+      preset: 'jest-expo',
+      testMatch: [
+        '<rootDir>/features/**/*.test.{ts,tsx}',
+        '<rootDir>/theme/**/*.test.ts',
+        '<rootDir>/components/**/*.test.{ts,tsx}',
+      ],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/$1',
+      },
+    },
   ],
-  transform: {
-    '^.+\\.mjs$': 'babel-jest',
-    '^.+\\.(ts|tsx)$': 'babel-jest',
-  },
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
-  },
 };

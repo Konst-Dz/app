@@ -38,9 +38,6 @@ export function useSearch(
     if (matchExpression === null) {
       return undefined;
     }
-    if (state.query === query && state.reloadKey === reloadKey) {
-      return undefined;
-    }
 
     let cancelled = false;
     const timer = setTimeout(() => {
@@ -95,7 +92,7 @@ export function useSearch(
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [db, matchExpression, query, reloadKey, state, translationCode]);
+  }, [db, matchExpression, query, reloadKey, translationCode]);
 
   if (matchExpression === null) {
     return IDLE_STATE;
