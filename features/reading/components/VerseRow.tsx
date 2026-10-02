@@ -23,7 +23,7 @@ export const VerseRow = memo(function VerseRow({
   onPress,
   onLongPress,
 }: VerseRowProps) {
-  const { palette, fontSizes } = useTheme();
+  const { palette, fontSizes, readingFontSize, readingLineHeight } = useTheme();
 
   const handlePress = useCallback(() => {
     onPress?.(verse);
@@ -74,7 +74,14 @@ export const VerseRow = memo(function VerseRow({
           </Text>
         </View>
         <Text
-          style={[styles.text, { color: palette.text, fontSize: fontSizes.md }]}
+          style={[
+            styles.text,
+            {
+              color: palette.text,
+              fontSize: readingFontSize,
+              lineHeight: readingLineHeight,
+            },
+          ]}
         >
           {verse.text}
         </Text>
@@ -103,7 +110,6 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    lineHeight: fontSizes.md * 1.5,
   },
   rowPressed: {
     opacity: 0.7,

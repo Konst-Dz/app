@@ -37,7 +37,7 @@ export const FootnoteSheet = memo(function FootnoteSheet({
   error,
   onClose,
 }: FootnoteSheetProps) {
-  const { palette, fontSizes } = useTheme();
+  const { palette, fontSizes, readingFontSize, readingLineHeight } = useTheme();
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -136,7 +136,11 @@ export const FootnoteSheet = memo(function FootnoteSheet({
                   <Text
                     style={[
                       styles.footnoteText,
-                      { color: palette.text, fontSize: fontSizes.md },
+                      {
+                        color: palette.text,
+                        fontSize: readingFontSize,
+                        lineHeight: readingLineHeight,
+                      },
                     ]}
                   >
                     {footnote.text}
@@ -224,6 +228,5 @@ const styles = StyleSheet.create({
   },
   footnoteText: {
     flex: 1,
-    lineHeight: fontSizes.md * 1.5,
   },
 });

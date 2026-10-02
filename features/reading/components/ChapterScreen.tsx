@@ -195,7 +195,14 @@ export function ChapterScreen() {
 
   return (
     <View style={[styles.screen, { backgroundColor: palette.background }]}>
-      <Stack.Screen options={{ title: book.title }} />
+      <Stack.Screen
+        options={{
+          title: book.title,
+          headerStyle: { backgroundColor: palette.background },
+          headerTintColor: palette.text,
+          contentStyle: { backgroundColor: palette.background },
+        }}
+      />
       <VerseList
         verses={verses ?? []}
         header={<ChapterHeader title={book.title} chapter={chapter} />}
