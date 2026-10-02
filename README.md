@@ -28,7 +28,7 @@ Scan the QR code with the Expo Go app on an Android device.
 | `npm run format` | Prettier |
 | `npm run typecheck` | TypeScript strict check |
 | `npm run build:db` | Rebuild the bundled Bible database asset |
-| `npm test` | Jest tests (database pipeline, `db/`, feature logic) |
+| `npm test` | Jest tests (database pipeline, `db/`, feature logic, theme tokens) |
 
 ## Architecture
 
@@ -48,6 +48,6 @@ Feature-based structure: every domain area (reading, search, bookmarks, settings
 - [x] Full-text search
 - [x] Bookmarks and reading history
 - [x] Footnotes (KJV with Apocrypha; the Synodal text has no public-domain footnotes)
-- [ ] Settings and theming (translation selection done; font size and theme toggle pending)
+- [x] Settings and theming (translation, theme mode, reading font size)
 - [ ] Release build via EAS Build
 - [ ] Google Play publication
