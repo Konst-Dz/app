@@ -1,8 +1,8 @@
-import { Component, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
-import { useTheme } from '@/theme/ThemeContext';
-import { spacing } from '@/theme/tokens';
+import { logger } from '@/lib/logger';
+
+import { StatusView } from './StatusView';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -12,6 +12,8 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
+const FALLBACK_MESSAGE = 'Не удалось загрузить данные';
+
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { error: null };
 
@@ -19,49 +21,31 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { error };
   }
 
-  componentDidCatch(error: Error): void {
-    if (__DEV__) {
-      console.error('[ErrorBoundary] caught error', error);
-    }
+  componentDidCatch(error: Error, info: ErrorInfo): void {
+    logger.error('ErrorBoundary', 'Render error caught', {
+      message: error.message,
+      stack: error.stack,
+      componentStack: info.componentStack,
+    });
   }
+
+  resetError = (): void => {
+    logger.debug('ErrorBoundary', 'Error reset requested');
+    this.setState({ error: null });
+  };
 
   render(): ReactNode {
     const { error } = this.state;
 
     if (error) {
-      return <ErrorFallback description={error.message} />;
+      return (
+        <StatusView
+          label={FALLBACK_MESSAGE}
+          detail={__DEV__ ? error.message : undefined}
+          onRetry={this.resetError}
+        />
+      );
     }
     return this.props.children;
   }
 }
-
-function ErrorFallback({ description }: { description: string }) {
-  const { palette, fontSizes } = useTheme();
-
-  return (
-    <View style={[styles.container, { backgroundColor: palette.background }]}>
-      <Text style={[styles.title, { color: palette.text, fontSize: fontSizes.lg }]}>
-        Не удалось загрузить данные
-      </Text>
-      <Text style={[styles.description, { color: palette.textMuted, fontSize: fontSizes.md }]}>
-        {description}
-      </Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    gap: spacing.s,
-    justifyContent: 'center',
-    padding: spacing.l,
-  },
-  title: {
-    fontWeight: '600',
-  },
-  description: {
-    textAlign: 'center',
-  },
-});

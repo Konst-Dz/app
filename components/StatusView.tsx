@@ -5,11 +5,12 @@ import { useTheme } from '@/theme/ThemeContext';
 
 interface StatusViewProps {
   label: string;
+  detail?: string;
   withSpinner?: boolean;
   onRetry?: () => void;
 }
 
-export function StatusView({ label, withSpinner = false, onRetry }: StatusViewProps) {
+export function StatusView({ label, detail, withSpinner = false, onRetry }: StatusViewProps) {
   const { palette, fontSizes } = useTheme();
 
   return (
@@ -18,6 +19,11 @@ export function StatusView({ label, withSpinner = false, onRetry }: StatusViewPr
       <Text style={[styles.statusText, { color: palette.textMuted, fontSize: fontSizes.md }]}>
         {label}
       </Text>
+      {detail ? (
+        <Text style={[styles.detailText, { color: palette.textMuted, fontSize: fontSizes.sm }]}>
+          {detail}
+        </Text>
+      ) : null}
       {onRetry ? <RetryButton onPress={onRetry} /> : null}
     </View>
   );
@@ -52,6 +58,9 @@ const styles = StyleSheet.create({
     paddingRight: spacing.l,
   },
   statusText: {
+    textAlign: 'center',
+  },
+  detailText: {
     textAlign: 'center',
   },
   retryButton: {
