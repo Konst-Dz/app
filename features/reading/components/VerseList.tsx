@@ -28,6 +28,10 @@ const MAX_TO_RENDER_PER_BATCH = 25;
 const WINDOW_SIZE = 7;
 const SCROLL_RETRY_DELAY_MS = 100;
 
+function verseKeyExtractor(verse: Verse): string {
+  return String(verse.id);
+}
+
 export function VerseList({
   verses,
   header,
@@ -101,7 +105,7 @@ export function VerseList({
       ref={listRef}
       data={verses}
       renderItem={renderVerse}
-      keyExtractor={(verse) => String(verse.id)}
+      keyExtractor={verseKeyExtractor}
       ListHeaderComponent={header}
       contentContainerStyle={styles.content}
       initialNumToRender={INITIAL_NUM_TO_RENDER}

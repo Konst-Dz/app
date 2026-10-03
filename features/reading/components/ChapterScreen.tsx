@@ -25,6 +25,7 @@ interface SelectedFootnoteVerse {
 }
 
 const EMPTY_FOOTNOTES: readonly Footnote[] = [];
+const EMPTY_VERSES: Verse[] = [];
 
 function parseRouteNumber(value: string | string[] | undefined): number | null {
   if (typeof value !== 'string') {
@@ -204,7 +205,7 @@ export function ChapterScreen() {
         }}
       />
       <VerseList
-        verses={verses ?? []}
+        verses={verses ?? EMPTY_VERSES}
         header={<ChapterHeader title={book.title} chapter={chapter} />}
         targetVerse={targetVerse}
         bookmarkedVerseNumbers={bookmarkedVerses}

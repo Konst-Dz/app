@@ -5,6 +5,7 @@ import {
   SectionList,
   StyleSheet,
   Text,
+  type ListRenderItemInfo,
 } from 'react-native';
 
 import type { Book } from '@/db/models';
@@ -16,9 +17,18 @@ import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { useBooks } from '../hooks/useBooks';
-import { groupBooksByTestament } from '../lib/books';
+import { groupBooksByTestament, type BookSection } from '../lib/books';
 import { BookRow } from './BookRow';
 import { ContinueReadingBanner } from './ContinueReadingBanner';
+
+const INITIAL_NUM_TO_RENDER = 12;
+const WINDOW_SIZE = 7;
+const MAX_TO_RENDER_PER_BATCH = 10;
+const UPDATE_CELLS_BATCHING_PERIOD = 50;
+
+function bookKeyExtractor(book: Book): string {
+  return String(book.id);
+}
 
 export function ReadingScreen() {
   const { palette, fontSizes } = useTheme();
@@ -79,6 +89,31 @@ export function ReadingScreen() {
     setReloadKey((key) => key + 1);
   }, []);
 
+  const renderBookItem = useCallback(
+    ({ item }: ListRenderItemInfo<Book>) => (
+      <BookRow book={item} onPress={handleBookPress} />
+    ),
+    [handleBookPress],
+  );
+
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: BookSection }) => (
+      <Text
+        style={[
+          styles.sectionHeader,
+          {
+            backgroundColor: palette.background,
+            color: palette.textMuted,
+            fontSize: fontSizes.sm,
+          },
+        ]}
+      >
+        {section.title}
+      </Text>
+    ),
+    [palette, fontSizes],
+  );
+
   if (isLoading && books === null) {
     return <StatusView label="Загрузка…" withSpinner />;
   }
@@ -95,22 +130,9 @@ export function ReadingScreen() {
     <SectionList
       style={styles.list}
       sections={sections}
-      keyExtractor={(book) => String(book.id)}
-      renderItem={({ item }) => <BookRow book={item} onPress={handleBookPress} />}
-      renderSectionHeader={({ section }) => (
-        <Text
-          style={[
-            styles.sectionHeader,
-            {
-              backgroundColor: palette.background,
-              color: palette.textMuted,
-              fontSize: fontSizes.sm,
-            },
-          ]}
-        >
-          {section.title}
-        </Text>
-      )}
+      keyExtractor={bookKeyExtractor}
+      renderItem={renderBookItem}
+      renderSectionHeader={renderSectionHeader}
       ListHeaderComponent={
         lastReadPosition && lastReadBook ? (
           <ContinueReadingBanner
@@ -122,7 +144,11 @@ export function ReadingScreen() {
       }
       contentContainerStyle={styles.content}
       stickySectionHeadersEnabled
-      refreshing={isLoading}
+      removeClippedSubviews
+      initialNumToRender={INITIAL_NUM_TO_RENDER}
+      windowSize={WINDOW_SIZE}
+      maxToRenderPerBatch={MAX_TO_RENDER_PER_BATCH}
+      updateCellsBatchingPeriod={UPDATE_CELLS_BATCHING_PERIOD}
       refreshControl={
         <RefreshControl
           refreshing={isLoading}

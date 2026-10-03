@@ -31,6 +31,10 @@ const INITIAL_NUM_TO_RENDER = 20;
 const MAX_TO_RENDER_PER_BATCH = 20;
 const WINDOW_SIZE = 7;
 
+function searchResultKeyExtractor(item: SearchResultItem): string {
+  return String(item.verseId);
+}
+
 export function SearchScreen() {
   const { palette, fontSizes } = useTheme();
   const insets = useSafeAreaInsets();
@@ -99,7 +103,7 @@ export function SearchScreen() {
       <FlatList
         data={results}
         renderItem={renderItem}
-        keyExtractor={(item) => String(item.verseId)}
+        keyExtractor={searchResultKeyExtractor}
         contentContainerStyle={styles.listContent}
         initialNumToRender={INITIAL_NUM_TO_RENDER}
         maxToRenderPerBatch={MAX_TO_RENDER_PER_BATCH}

@@ -21,6 +21,9 @@ import { SegmentSwitcher, type BookmarksSegment } from './SegmentSwitcher';
 const EMPTY_BOOKMARKS_LABEL = 'Закладок пока нет. Нажмите и удерживайте стих, чтобы добавить закладку.';
 const EMPTY_HISTORY_LABEL = 'История пуста. Откройте главу, и она появится здесь.';
 const LOAD_ERROR_LABEL = 'Не удалось загрузить данные';
+const INITIAL_NUM_TO_RENDER = 10;
+const WINDOW_SIZE = 7;
+const MAX_TO_RENDER_PER_BATCH = 10;
 
 export function BookmarksScreen() {
   const contentDb = useSQLiteContext();
@@ -151,6 +154,10 @@ export function BookmarksScreen() {
             renderItem={renderBookmarkItem}
             keyExtractor={keyExtractor}
             contentContainerStyle={styles.content}
+            removeClippedSubviews
+            initialNumToRender={INITIAL_NUM_TO_RENDER}
+            windowSize={WINDOW_SIZE}
+            maxToRenderPerBatch={MAX_TO_RENDER_PER_BATCH}
           />
         )
       ) : isHistoryLoading || !historyItemsReady ? (
@@ -163,6 +170,10 @@ export function BookmarksScreen() {
           renderItem={renderHistoryItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.content}
+          removeClippedSubviews
+          initialNumToRender={INITIAL_NUM_TO_RENDER}
+          windowSize={WINDOW_SIZE}
+          maxToRenderPerBatch={MAX_TO_RENDER_PER_BATCH}
         />
       )}
     </View>
